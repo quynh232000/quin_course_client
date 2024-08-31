@@ -1,0 +1,41 @@
+input,select,textarea{
+    outline: none;
+}
+*:hover{
+    transition: .3s ease;
+}
+i{
+    font-size: 24px;
+    
+}
+/* scroll bar */
+
+.scrollbar_custom::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #333433;
+}
+.scrollbar_custom_hidden::-webkit-scrollbar{
+	display: none !important;
+}
+.scrollbar_custom::-webkit-scrollbar
+{
+	width: 8px;
+	background-color: #201d1d;
+	display: none;
+}
+.w-sidebar:hover .scrollbar_custom::-webkit-scrollbar{
+	display: block ;
+}
+.scrollbar_custom::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	/* background-color: #3a3b3c; */
+	background-color: rgba(228, 230, 235,.6);
+    
+}
+.scrollbar_hover:hover .scrollbar_custom::-webkit-scrollbar{
+	display: block ;
+}
