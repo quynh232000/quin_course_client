@@ -1,15 +1,37 @@
 import { FaAnglesLeft, FaArrowRightLong, FaCircleCheck } from "react-icons/fa6";
 import i_logo from "../assets/logo/logo-new.png";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import ProgressCircle from "../components/compoment/ProgressCircle";
 import { GoPencil } from "react-icons/go";
-import { FaAngleRight, FaChevronLeft, FaLock, FaYoutube } from "react-icons/fa";
+import {
+  FaAngleRight,
+  FaChevronLeft,
+  FaHourglassStart,
+  FaLock,
+  FaRegNewspaper,
+  FaYoutube,
+} from "react-icons/fa";
 import {
   Accordion,
   AccordionBody,
   AccordionHeader,
 } from "@material-tailwind/react";
-import { useState } from "react";
+
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { MCourse, MLearningLog, MSection, MStep } from "../types/app";
+import {
+  SGetLearningCourse,
+  SSaveUserProgress,
+} from "../services/CommonService";
+import { formatDuration } from "../components/functions/tool";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentCourse } from "../redux/reducers/appReducer";
+import { RootState } from "../redux/reducers";
+import TimeModal from "../components/Modals/TimeModal";
+
+import { GrMenu } from "react-icons/gr";
+import { IoNewspaperOutline } from "react-icons/io5";
 
 function Icon({ id = 1, open = 1 }) {
   return (
@@ -32,11 +54,75 @@ function Icon({ id = 1, open = 1 }) {
   );
 }
 function StudyLayout() {
-  const [open, setOpen] = useState(0);
+  const dispatch = useDispatch();
+  const { studyLog } = useSelector((state: RootState) => state.appReducer);
 
+  const [open, setOpen] = useState(0);
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
+  const [userProgress, setUserProgress] = useState<number[]>([]);
+
+  const { slug } = useParams();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const step_uuid = searchParams.get("id");
+  const [learningLog, setLearningLog] = useState<MLearningLog>();
+  const [sections, setSections] = useState<MSection[]>([]);
+  const [courseInfo, setCourseInfo] = useState<MCourse>();
+
+  const [openTop, setOpenTop] = useState(false);
+  const [isShowSidebar, setIsShowSidebar] = useState(true);
+  const [timeWaiting, setTimeWaiting] = useState<string>("");
+  useEffect(() => {
+    if (!slug) {
+      navigate("/notfound");
+    } else {
+      SGetLearningCourse(slug).then((res) => {
+        if (res.status) {
+          if (!step_uuid) {
+            navigate("?id=" + res.data.learning_log.current_step);
+          }
+          setLearningLog(res.data.learning_log);
+          setSections(res.data.sections);
+          setCourseInfo(res.data.course);
+          dispatch(setCurrentCourse(res.data.course));
+          setUserProgress(JSON.parse(res.data.user_progress));
+          document.title = res.data.course.title;
+        } else {
+          navigate("/notfound");
+        }
+      });
+    }
+  }, [slug, step_uuid]);
+  const handleBtnStep = (type: string) => {
+    if (type == "next" && studyLog.nextStep) {
+      if (courseInfo && studyLog.currentStep == learningLog?.current_step) {
+        SSaveUserProgress(courseInfo?.id, studyLog.currentStep).then((res) => {
+          if (res.status) {
+            navigate("?id=" + studyLog.nextStep);
+          } else {
+            setOpenTop(true);
+            setTimeWaiting(res.data);
+          }
+        });
+      } else {
+        navigate("?id=" + studyLog.nextStep);
+      }
+    } else {
+      navigate("?id=" + studyLog.previousStep);
+    }
+  };
+  const handleSelectStep = (step: MStep) => {
+    if (userProgress.includes(step.id)) {
+      navigate("?id=" + step.uuid);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col">
+      <TimeModal setOpenTop={setOpenTop} openTop={openTop} time={timeWaiting} />
       <div className="bg-primary-50 flex border-b shadow-sm  justify-between items-center">
         <div className="flex items-center gap-2">
           <Link
@@ -50,15 +136,27 @@ function StudyLayout() {
               <img className="w-[52px]" src={i_logo} alt="" />
             </Link>
             <div className="font-bold text-primary-800 text-lg">
-              Xây dựng Website với Reactjs
+              {courseInfo?.title}
             </div>
           </div>
         </div>
         <div className="pr-5 flex items-center gap-4">
-          <div className="flex gap-1 items-center  ">
-            <ProgressCircle progress={100} />
-            <span className="text-gray-700 ">26/49 bài học</span>
+          <div className="flex gap-2 items-center  ">
+            <ProgressCircle
+              progress={Math.ceil(courseInfo?.percent_learning ?? 0)}
+            />
+            <span className="text-gray-700 ">
+              {userProgress?.length ?? 0}/{courseInfo?.total_steps} bài học
+            </span>
           </div>
+          {!studyLog.nextStep && (
+            <Link
+              to={"/certificate/" + courseInfo?.slug}
+              className="text-primary-500 font-bold text-sm"
+            >
+              Xem chứng chỉ
+            </Link>
+          )}
           <div className="flex items-center gap-2">
             <GoPencil />
             Ghi chú
@@ -68,895 +166,189 @@ function StudyLayout() {
       <div className="flex-1 w-full relative">
         <div className=" absolute top-0 left-0 right-0 bottom-0 flex">
           <div className="flex-1 relative">
-            <Outlet/>
+            <Outlet />
+            {/* {courseInfo && <Learning course={courseInfo} />} */}
           </div>
-          <div className="w-[23%]  border-l flex flex-col">
+          <div
+            className={
+              "w-[23%]  border-l  flex-col " +
+              (isShowSidebar ? " flex" : " hidden")
+            }
+          >
             <div className="font-bold text-primary-500 p-4 border-b shadow-sm">
               Nội dung khóa học
             </div>
             <div className="scrollbar_custom_hidden scrollbar_custom  overflow-y-scroll border-l">
               {/* item */}
-              <Accordion open={open === 1} icon={<Icon id={1} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(1)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>1.Công nghệ thông tin</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+              {sections &&
+                sections.length > 0 &&
+                sections.map((item, index) => {
+                  const t =
+                    (
+                      item.steps.filter((n) => userProgress.includes(n.id)) ??
+                      []
+                    ).length ?? 0;
+                  return (
+                    <Accordion
+                      key={item.id}
+                      open={
+                        open === item.id ||
+                        (item.steps.find((i) => i.uuid == studyLog.currentStep)
+                          ? true
+                          : false)
+                      }
+                      icon={<Icon id={item.id} open={open} />}
+                    >
+                      <AccordionHeader
+                        onClick={() => handleOpen(item.id)}
+                        className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
+                      >
+                        <div className=" text-[16px] ">
                           <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                          <FaLock />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                          <FaLock />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 2} icon={<Icon id={2} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(2)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>2.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 3} icon={<Icon id={3} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(3)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>3.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 4} icon={<Icon id={4} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(4)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>4.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-
-              {/* item */}
-              <Accordion open={open === 5} icon={<Icon id={5} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(5)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>5.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 6} icon={<Icon id={6} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(6)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>6.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 7} icon={<Icon id={7} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(7)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>7.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-
-              {/* item */}
-              <Accordion open={open === 8} icon={<Icon id={8} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(8)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>8.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 9} icon={<Icon id={9} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(9)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>9.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
-              {/* item */}
-              <Accordion open={open === 10} icon={<Icon id={10} open={open} />}>
-                <AccordionHeader
-                  onClick={() => handleOpen(10)}
-                  className="px-4 py-3  bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className=" text-[16px] ">
-                    <div>
-                      <div>10.Nhập môn lập trình</div>
-                    </div>
-                    <div className="flex gap-2 text-gray-500 text-sm font-light">
-                      <span>6/8</span>
-                      <span>|</span>
-                      <span>02:34:45</span>
-                    </div>
-                  </div>
-                </AccordionHeader>
-                <AccordionBody className="my-0 py-0">
-                  <div className="my-0">
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 bg-primary-50 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.1. Giới thiệu</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-success-500">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link to={"#"} className=" ">
-                      <div className="pl-7 py-2 pr-4 hover:bg-gray-100 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="font">1.2 Kiểm tra cơ bản</div>
-                          <div className="text-gray-400">
-                            <FaCircleCheck />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <div>
-                            <FaYoutube />
-                          </div>
-                          <span className="text-sm">40:46</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </AccordionBody>
-              </Accordion>
+                            <div className="flex ">
+                              {index + 1}.{" "}
+                              <div className="flex-1">{item.title}</div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 text-gray-500 text-sm font-light">
+                            <span>
+                              {t}/{item.steps.length}
+                            </span>
+                            <span>|</span>
+                            <span>{formatDuration(item.duration, false)}</span>
+                          </div>
+                        </div>
+                      </AccordionHeader>
+                      <AccordionBody className="my-0 py-0">
+                        <div className="my-0">
+                          {item.steps.length > 0 ? (
+                            item.steps.map((step, i) => {
+                              return (
+                                <div
+                                  onClick={() => handleSelectStep(step)}
+                                  className="w-full"
+                                  key={step.id}
+                                >
+                                  <div
+                                    className={
+                                      "pl-7 py-2 pr-4  border-b " +
+                                      (userProgress.includes(step.id)
+                                        ? studyLog.currentStep &&
+                                          step.uuid == studyLog.currentStep
+                                          ? " bg-primary-100 "
+                                          : " hover:bg-primary-50 cursor-pointer"
+                                        : " bg-gray-200 hover:bg-gray-200 cursor-default")
+                                    }
+                                  >
+                                    <div className="flex items-center justify-between gap-4">
+                                      <div className="flex">
+                                        {index + 1}.{i + 1}.{" "}
+                                        <div className="flex-1 text-left">
+                                          {step.title}
+                                        </div>
+                                      </div>
+                                      {userProgress.includes(step.id) ? (
+                                        learningLog &&
+                                        step.uuid !=
+                                          learningLog?.current_step && (
+                                          <div className="text-success-500">
+                                            <FaCircleCheck />
+                                          </div>
+                                        )
+                                      ) : (
+                                        <div className="text-gray-500">
+                                          <FaLock />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                                      <div>
+                                        {step.type == "lecture" && (
+                                          <FaYoutube />
+                                        )}
+                                        {step.type == "quiz" && (
+                                          <FaRegNewspaper />
+                                        )}
+                                        {step.type == "article" && (
+                                          <IoNewspaperOutline />
+                                        )}
+                                      </div>
+                                      <span className="text-sm">
+                                        {formatDuration(step.duration)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center py-4 text-sm text-primary-500">
+                              --Đang cập nhật--
+                            </div>
+                          )}
+                        </div>
+                      </AccordionBody>
+                    </Accordion>
+                  );
+                })}
             </div>
           </div>
         </div>
       </div>
       <div className="bg-gray-100 border-t shadow-sm relative flex justify-center ">
         <div className="flex gap-4 py-3">
-          <button className="flex  items-center gap-2 uppercase font-[600] text-sm bg-blue-gray-50 text-primary-300 border border-primary-200 rounded-full px-6 py-[6px]">
-            <FaChevronLeft /> Bài trước
-          </button>
-          <button className="flex hover:bg-primary-600 hover:shadow-sm items-center gap-2 uppercase font-[600] text-sm border border-transparent bg-primary-500 text-white rounded-full px-6 py-[6px]">
-            Bài sau <FaAngleRight />
-          </button>
+          {studyLog.previousStep ? (
+            <button
+              onClick={() => handleBtnStep("previous")}
+              className="flex hover:bg-primary-600 hover:shadow-sm items-center gap-2 uppercase font-[600] text-sm border border-transparent bg-primary-500 text-white rounded-full px-6 py-[6px]"
+            >
+              <FaChevronLeft /> Bài trước
+            </button>
+          ) : (
+            <button
+              disabled
+              className="flex  items-center gap-2 uppercase font-[600] text-sm bg-blue-gray-50 text-primary-300 border border-primary-200 rounded-full px-6 py-[6px]"
+            >
+              <FaChevronLeft /> Bài trước
+            </button>
+          )}
+
+          {studyLog.nextStep ? (
+            <button
+              onClick={() => handleBtnStep("next")}
+              className="flex hover:bg-primary-600 hover:shadow-sm items-center gap-2 uppercase font-[600] text-sm border border-transparent bg-primary-500 text-white rounded-full px-6 py-[6px]"
+            >
+              Bài sau <FaAngleRight />
+            </button>
+          ) : (
+            <button
+              disabled
+              className="flex  items-center gap-2 uppercase font-[600] text-sm bg-blue-gray-50 text-primary-300 border border-primary-200 rounded-full px-6 py-[6px]"
+            >
+              Bài sau <FaAngleRight />
+            </button>
+          )}
         </div>
         <div className=" absolute top-0 right-0 bottom-0 flex items-center gap-4 pr-4">
-          <div className="font-bold text-primary-800 text-[16px]">
-            1. Vừa giải trí vừa học
+          <div className="font-bold text-primary-800 text-[16px] flex items-center gap-2">
+            <FaHourglassStart className="text-green-500 animate-spin " />
+            {studyLog && studyLog.stepInfo && studyLog.stepInfo.title}
           </div>
-          <div className="bg-white rounded-full p-3 border shadow-sm text-primary-500 hover:scale-110 cursor-pointer hover:bg-primary-50">
-            <FaArrowRightLong className="" />
-          </div>
+          {isShowSidebar ? (
+            <div
+              onClick={() => setIsShowSidebar(false)}
+              className="bg-white rounded-full p-3 border shadow-sm text-primary-500 hover:scale-110 cursor-pointer hover:bg-primary-50"
+            >
+              <FaArrowRightLong className="" />
+            </div>
+          ) : (
+            <div
+              onClick={() => setIsShowSidebar(true)}
+              className="bg-white rounded-full p-3 border shadow-sm text-primary-500 hover:scale-110 cursor-pointer hover:bg-primary-50"
+            >
+              <GrMenu />
+            </div>
+          )}
         </div>
       </div>
     </div>

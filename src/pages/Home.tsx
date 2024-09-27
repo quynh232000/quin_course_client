@@ -1,6 +1,4 @@
 import { Carousel } from "@material-tailwind/react";
-import banner1 from "../assets/banner/banner1-01.png";
-import banner2 from "../assets/banner/banner3-01.png";
 import logowhite from "../assets/logo/logo-white-text.png";
 import { FaAnglesRight } from "react-icons/fa6";
 import { FaChevronRight } from "react-icons/fa";
@@ -13,8 +11,100 @@ import i_kynang from "../assets/images/kynang.png";
 import TeacherItem from "../components/items/TeacherItem";
 import TopicHomeItem from "../components/items/TopicHomeItem";
 import NewsItem from "./../components/items/NewsItem";
+import { useEffect, useState } from "react";
+import {
+  MBanner,
+  MBlog,
+  MCategory,
+  MCourse,
+  MTeacher,
+  MVoucher,
+} from "../types/app";
+import {
+  SGetBanners,
+  SGetBlogs,
+  SGetCourses,
+  SGetTeachers,
+  SGetVouchers,
+} from "../services/CommonService";
+import { GetCategoryById } from "../services/CategorySevice";
+import { FormatDate } from "../components/functions/tool";
+import CourseSkeleton from "../components/skeleton/CourseSkeleton";
+import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
+import TopicSke from "../components/skeleton/TopicSke";
+import NewsSke from "../components/skeleton/NewsSke";
 
 const Home = () => {
+  const [banners, setBanners] = useState<MBanner[] | null>(null);
+  const [vouchers, setVouchers] = useState<MVoucher[] | null>(null);
+  const [courseFee, setCourseFree] = useState<MCourse[] | null>(null);
+  const [courseSale, setCourseSale] = useState<MCourse[] | null>(null);
+  const [coursePolular, setCoursePolular] = useState<MCourse[] | null>(null);
+  const [teachers, setTeachers] = useState<MTeacher[] | null>(null);
+  const [cates, setCates] = useState<MCategory[] | null>(null);
+  const [blogs, setBlogs] = useState<MBlog[] | null>(null);
+
+  // const [l_slider, setL_slider] = useState(true);
+  const [l_free, setL_free] = useState(true);
+  // const [l_voucher, setL_voucher] = useState(true);
+  const [l_sale, setL_sale] = useState(true);
+  const [l_popular, setL_popular] = useState(true);
+  const [l_news, setL_news] = useState(true);
+  const [l_topic, setL_topic] = useState(true);
+  const [l_teacher, setL_teacher] = useState(true);
+
+  useEffect(() => {
+    document.title="Home - Quin Course"
+    SGetBanners("?placement=home&type=slider").then((res) => {
+      // setL_slider(false);
+      if (res.status) {
+        setBanners(res.data);
+      }
+    });
+    SGetVouchers("?limit=3").then((res) => {
+      // setL_voucher(false);
+      if (res.status) {
+        setVouchers(res.data);
+      }
+    });
+    SGetCourses("?type=free&limit=8").then((res) => {
+      setL_free(false);
+      if (res.status) {
+        setCourseFree(res.data);
+      }
+    });
+    SGetCourses("?type=sale&limit=3").then((res) => {
+      setL_sale(false);
+      if (res.status) {
+        setCourseSale(res.data);
+      }
+    });
+    SGetCourses("?type=popular&limit=8").then((res) => {
+      setL_popular(false);
+      if (res.status) {
+        setCoursePolular(res.data);
+      }
+    });
+    SGetTeachers("?limit=5").then((res) => {
+      setL_teacher(false);
+      if (res.status) {
+        setTeachers(res.data);
+      }
+    });
+    GetCategoryById(0, "?limit=6").then((res) => {
+      setL_topic(false);
+      if (res.status) {
+        setCates(res.data);
+      }
+    });
+    SGetBlogs("?limit=4").then((res) => {
+      setL_news(false);
+      if (res.status) {
+        setBlogs(res.data);
+      }
+    });
+  }, []);
+
   return (
     <div className="flex flex-col gap-[72px] py-[32px] ">
       <section className="w-content m-auto">
@@ -35,131 +125,80 @@ const Home = () => {
               </div>
             )}
           >
-            <div className=" relative ">
-              <img
-                src={banner1}
-                alt="image 1"
-                className="h-full w-full object-cover"
-              />
-              <div className=" absolute top-0 left-0 right-0 bottom-0 p-4 flex flex-col">
-                <div>
-                  <img width={54} src={logowhite} alt="" />
-                </div>
-                <div className=" w-60 text-white px-[72px] mt-2 flex flex-col flex-1">
-                  <div>
-                    <h3 className=" uppercase font-bold text-[30px]">
-                      Học tập hiệu quả cùng quin
-                    </h3>
-                    <span className="text-gray-300 line-clamp-2">
-                      Quin là kênh học trực tuyến được biết đến rộng rãi trên
-                      các nền tảng mạng xã hội, hỗ trợ đào tạo có cả 2 chương
-                      trình dành cho người Việt và người dùng tiếng Anh.
-                    </span>
+            {banners ? (
+              banners.map((item) => {
+                return (
+                  <div className=" relative " key={item.id}>
+                    <img
+                      src={item.banner_url}
+                      alt={item.title}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className=" absolute top-0 left-0 right-0 bottom-0 p-4 flex flex-col">
+                      <div>
+                        <img width={54} src={logowhite} alt="" />
+                      </div>
+                      <div className=" w-60 text-white px-[72px] mt-2 flex flex-col flex-1">
+                        <div>
+                          <h3 className=" uppercase font-bold text-[30px]">
+                            {item.title}
+                          </h3>
+                          <span className="text-gray-300 line-clamp-2">
+                            {item.description}
+                          </span>
+                        </div>
+                        <div className="flex-1 flex items-center ">
+                          <button className="flex items-center gap-2 border border-primary-500 rounded-lg py-2 px-4 bg-white text-primary-500 font-bold shadow-lg">
+                            <span>
+                              <FaAnglesRight />
+                            </span>
+                            Mua khóa học
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 flex items-center ">
-                    <button className="flex items-center gap-2 border border-primary-500 rounded-lg py-2 px-4 bg-white text-primary-500 font-bold shadow-lg">
-                      <span>
-                        <FaAnglesRight />
-                      </span>
-                      Mua khóa học
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className=" relative ">
-              <img
-                src={banner2}
-                alt="image 1"
-                className="h-full w-full object-cover"
-              />
-              <div className=" absolute top-0 left-0 right-0 bottom-0 p-4 flex flex-col">
-                <div>
-                  <img width={54} src={logowhite} alt="" />
-                </div>
-                <div className=" w-60 text-white px-[72px] mt-2 flex flex-col flex-1">
-                  <div>
-                    <h3 className=" uppercase font-bold text-[30px]">
-                      Học tập hiệu quả cùng quin
-                    </h3>
-                    <span className="text-gray-300 line-clamp-2">
-                      Quin là kênh học trực tuyến được biết đến rộng rãi trên
-                      các nền tảng mạng xã hội, hỗ trợ đào tạo có cả 2 chương
-                      trình dành cho người Việt và người dùng tiếng Anh.
-                    </span>
-                  </div>
-                  <div className="flex-1 flex items-center ">
-                    <button className="flex items-center gap-2 border border-primary-500 rounded-lg py-2 px-4 bg-white text-primary-500 font-bold shadow-lg">
-                      <span>
-                        <FaAnglesRight />
-                      </span>
-                      Mua khóa học
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                );
+              })
+            ) : (
+              <div></div>
+            )}
           </Carousel>
         </div>
-        <div className="mt-8 w-full grid grid-cols-3 gap-3">
-          <div className="border border-primary-500 p-3 rounded-lg">
-            <div className="flex justify-between items-center">
-              <div className="font-bold">Giảm 10%</div>
-              <div>
-                Mã: <span className="text-primary-500">QRCT2134S</span>
-              </div>
-            </div>
-            <div className="my-1">
-              Đơn tối thiểu: <span className="text-gray-900">300.000 đ</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-sm">
-                HSD: <span>30/12/2024</span>
-              </div>
-              <button className="bg-primary-500 rounded-md text-sm py-0 px-4 text-white">
-                Lưu
-              </button>
-            </div>
+        {vouchers && vouchers.length > 0 && (
+          <div className="mt-8 w-full grid grid-cols-3 gap-3">
+            {vouchers.map((item) => {
+              return (
+                <div
+                  className="border cursor-pointer hover:border-primary-500 p-3 rounded-lg"
+                  key={item.id}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold">{item.title}</div>
+                    <div>
+                      Mã:{" "}
+                      <span className="text-primary-500 font-bold">
+                        {item.code}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="my-1">
+                    Đơn tối thiểu:
+                    <span className="text-primary-600">{item.min_price} đ</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm">
+                      HSD: <span>{FormatDate(item.date_end)}</span>
+                    </div>
+                    <button className="bg-primary-500 rounded-md text-sm py-0 px-4 text-white">
+                      Lưu
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div className="border border-primary-500 p-3 rounded-lg">
-            <div className="flex justify-between items-center">
-              <div className="font-bold">Giảm 10%</div>
-              <div>
-                Mã: <span className="text-primary-500">QRCT2134S</span>
-              </div>
-            </div>
-            <div className="my-1">
-              Đơn tối thiểu: <span className="text-gray-900">300.000 đ</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-sm">
-                HSD: <span>30/12/2024</span>
-              </div>
-              <button className="bg-primary-500 rounded-md text-sm py-0 px-4 text-white">
-                Lưu
-              </button>
-            </div>
-          </div>
-          <div className="border border-primary-500 p-3 rounded-lg">
-            <div className="flex justify-between items-center">
-              <div className="font-bold">Giảm 10%</div>
-              <div>
-                Mã: <span className="text-primary-500">QRCT2134S</span>
-              </div>
-            </div>
-            <div className="my-1">
-              Đơn tối thiểu: <span className="text-gray-900">300.000 đ</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-sm">
-                HSD: <span>30/12/2024</span>
-              </div>
-              <button className="bg-primary-500 rounded-md text-sm py-0 px-4 text-white">
-                Lưu
-              </button>
-            </div>
-          </div>
-        </div>
+        )}
       </section>
       {/* kh free */}
       <section className="w-content m-auto">
@@ -174,16 +213,22 @@ const Home = () => {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-5">
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-        </div>
+        {l_free ? (
+          <div className="grid grid-cols-4 gap-3 mt-5">
+            <CourseSkeleton />
+            <CourseSkeleton />
+            <CourseSkeleton />
+            <CourseSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-3 mt-5">
+            {courseFee &&
+              courseFee.length > 0 &&
+              courseFee.map((item) => {
+                return <ProductItem key={item.id} course={item} />;
+              })}
+          </div>
+        )}
       </section>
       {/* kh sale */}
       <section className="w-content m-auto">
@@ -196,12 +241,22 @@ const Home = () => {
           </button>
         </div>
         <div className="grid grid-cols-4 gap-3 mt-5">
-          <div className="border rounded-lg shadow-sm">
-            <img className="w-full object-cover" src={i_sale} alt="" />
+          <div className="border rounded-lg shadow-sm flex justify-center items-center ">
+            <img
+              className="w-full object-cover h-full rounded-lg"
+              src={i_sale}
+              alt=""
+            />
           </div>
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
+          {l_sale ? (
+            <CourseSkeleton />
+          ) : (
+            courseSale &&
+            courseSale.length > 0 &&
+            courseSale.map((item) => {
+              return <ProductItem key={item.id} course={item} />;
+            })
+          )}
         </div>
       </section>
       {/* kh popular */}
@@ -217,16 +272,22 @@ const Home = () => {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-5">
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-          <ProductItem />
-        </div>
+        {l_popular ? (
+          <div className="grid grid-cols-4 gap-3 mt-5">
+            <CourseSkeleton />
+            <CourseSkeleton />
+            <CourseSkeleton />
+            <CourseSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-3 mt-5">
+            {coursePolular &&
+              coursePolular.length > 0 &&
+              coursePolular.map((item) => {
+                return <ProductItem key={item.id} course={item} />;
+              })}
+          </div>
+        )}
       </section>
 
       {/* become teacher */}
@@ -294,13 +355,21 @@ const Home = () => {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-5 gap-3 mt-5">
-          <TeacherItem />
-          <TeacherItem />
-          <TeacherItem />
-          <TeacherItem />
-          <TeacherItem />
-        </div>
+        {l_teacher ? (
+          <div className="grid grid-cols-5 gap-3 mt-5">
+            <TeacherSkeleton />
+            <TeacherSkeleton />
+            <TeacherSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-5 gap-3 mt-5">
+            {teachers &&
+              teachers.length > 0 &&
+              teachers.map((item) => {
+                return <TeacherItem key={item.id} teacher={item} />;
+              })}
+          </div>
+        )}
       </section>
       {/* chu de quan tam */}
       <section className="w-content m-auto">
@@ -312,14 +381,21 @@ const Home = () => {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-6 gap-3 mt-5">
-          <TopicHomeItem />
-          <TopicHomeItem />
-          <TopicHomeItem />
-          <TopicHomeItem />
-          <TopicHomeItem />
-          <TopicHomeItem />
-        </div>
+        {l_topic ? (
+          <div className="grid grid-cols-6 gap-3 mt-5">
+            <TopicSke />
+            <TopicSke />
+            <TopicSke />
+          </div>
+        ) : (
+          <div className="grid grid-cols-6 gap-3 mt-5">
+            {cates &&
+              cates.length > 0 &&
+              cates.map((item) => {
+                return <TopicHomeItem key={item.id} category={item} />;
+              })}
+          </div>
+        )}
       </section>
       {/* tin tuc */}
       <section className="w-content m-auto">
@@ -331,12 +407,20 @@ const Home = () => {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-3 mt-5">
-          <NewsItem />
-          <NewsItem />
-          <NewsItem />
-          <NewsItem />
-        </div>
+        {l_news ? (
+          <div className="grid grid-cols-2 gap-3 mt-5">
+            <NewsSke />
+            <NewsSke />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 mt-5">
+            {blogs &&
+              blogs.length > 0 &&
+              blogs.map((item) => {
+                return <NewsItem key={item.id} blog={item} />;
+              })}
+          </div>
+        )}
       </section>
 
       {/* become business */}

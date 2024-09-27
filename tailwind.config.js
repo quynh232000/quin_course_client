@@ -93,7 +93,7 @@ export default withMT({
       },
       fontFamily: {
         inter: ['Roboto', 'sans-serif'],
-
+        greatvibes: ['Great Vibes', 'cursive'],
       },
       keyframes: {
         'accordion-down': {

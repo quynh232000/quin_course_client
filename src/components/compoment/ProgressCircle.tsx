@@ -1,4 +1,4 @@
-function ProgressCircle({ progress = 0, size = 34, strokeWidth = 2 }) {
+function ProgressCircle({ progress = 0, size = 34, strokeWidth = 3 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;

@@ -8,8 +8,10 @@ import CheckoutError from "../pages/CheckoutError";
 import CheckoutSuccess from "../pages/CheckoutSuccess";
 import Collection from "../pages/Collection";
 import Detail from "../pages/Detail";
+import Error from "../pages/Error";
 import ForgotPassword from "../pages/ForgotPassword";
 import Home from "../pages/Home";
+import CompletedCourse from "../pages/learning/CompletedCourse";
 import Learning from "../pages/learning/Learning";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -27,24 +29,20 @@ const publicRoutes = [
         component: Home,
       },
       {
-        path: "/collection",
+        path: "/collection/:slug",
         component: Collection,
       },
       {
-        path: "/detail",
+        path: "/course/:slug",
         component: Detail,
       },
       {
-        path: "/teacher",
+        path: "/teacher/:username",
         component: Teacher,
       },
       {
         path: "/cart",
         component: Cart,
-      },
-      {
-        path: "/checkout",
-        component: Checkout,
       },
       {
         path: "/login",
@@ -57,6 +55,13 @@ const publicRoutes = [
       {
         path: "/forgot-password",
         component: ForgotPassword,
+      },
+
+
+
+      {
+        path: "/error",
+        component: Error,
       },
     ],
   },
@@ -73,15 +78,19 @@ const publicRoutes = [
       },
     ],
   },
+  
+ 
+];
+const privateRoutes = [
   {
     layout: ProfileLayout,
     routes: [
       {
-        path: "/profile",
+        path: "/account/:username",
         component: Profile,
       },
       {
-        path: "/user/course",
+        path: "/account/:username/courses",
         component: MyCourse,
       },
       {
@@ -96,24 +105,27 @@ const publicRoutes = [
     ],
   },
   {
-    layout: StudyLayout,
-    routes: [
-      {
-        path: "/learning",
-        component: Learning,
-      },
-     
-    ],
-  },
-];
-const privateRoutes = [
-  {
     layout: AppLayout,
     routes: [
       {
-        path: "/admin",
-        component: Home,
+        path: "/checkout",
+        component: Checkout,
       },
+      {
+        path: "/certificate/:slug",
+        component: CompletedCourse,
+      },
+    ],
+  },
+  {
+    layout: StudyLayout,
+    routes: [
+      {
+        path: "/learning/:slug",
+        component: Learning,
+      },
+     
+     
     ],
   },
 ];

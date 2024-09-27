@@ -1,53 +1,163 @@
-import React from 'react'
-import { IoIosSearch } from 'react-icons/io'
-import ProductCollectItem from '../../components/items/ProductCollectItem'
-import { FaAnglesLeft, FaAnglesRight } from 'react-icons/fa6'
+import { IoIosSearch } from "react-icons/io";
+import ProductCollectItem from "../../components/items/ProductCollectItem";
+import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/reducers";
+import { useEffect, useState } from "react";
+import { SGetCourseJoin } from "../../services/CommonService";
+import { MCourse } from "../../types/app";
+import CourseCollectionSke from "../../components/skeleton/CourseCollectionSke";
+import { Link, useLocation } from "react-router-dom";
 
+const linkNavs = [
+  { id: 1, title: "Tất cả", link: "" },
+  { id: 2, title: "Đã hoàn thành", link: "?type=completed" },
+  { id: 3, title: "Chưa hoàn thành", link: "?type=studying" },
+  { id: 4, title: "Chứng chỉ", link: "?type=certificate" },
+];
 function MyCourse() {
+  const { currentUser } = useSelector((state: RootState) => state.appReducer);
+  const [courses, setCourses] = useState<MCourse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get("type") || "";
+  const [linkNav, setLinkNav] = useState(
+    type == "" ? 1 : linkNavs.find((i) => i.link.includes(type))?.id ?? 1
+  );
+
+  useEffect(() => {
+    setIsLoading(true);
+    if (currentUser && currentUser.username) {
+      document.title =
+        currentUser.first_name + " " + currentUser.last_name + " | Quin Course";
+      SGetCourseJoin(`?limit=10&username=${currentUser.username}`).then(
+        (res) => {
+          setIsLoading(false);
+          if (res.status) {
+            setCourses(res.data.courses);
+            setTotalPage(Math.ceil(res.meta.total / res.meta.per_page));
+          }
+        }
+      );
+    }
+  }, [currentUser]);
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPage) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
-    <div className=''>
-        <div className="font-bold text-xl">Khóa học của bạn</div>
+    <div className="">
+      <div className="font-bold text-xl">Khóa học của bạn</div>
 
-        <div className='bg-gray-50 p-4 rounded-lg my-4 flex gap-4 items-center' >
-            <div className='flex gap-1 flex-1'>
-                <div className=' shadow-sm bg-white px-6 py-1 border hover:bg-primary-50 cursor-pointer w-fit rounded-lg'>Tất cả</div>
-                <div className=' hover:shadow-sm  px-6 py-1 border border-transparent hover:border-gray-100 hover:bg-primary-50 cursor-pointer w-fit rounded-lg'>Đã hoàn thành</div>
-                <div className=' hover:shadow-sm  px-6 py-1 border border-transparent hover:border-gray-100 hover:bg-primary-50 cursor-pointer w-fit rounded-lg'>Chưa hoàn thành</div>
-                <div className=' hover:shadow-sm  px-6 py-1 border border-transparent hover:border-gray-100 hover:bg-primary-50 cursor-pointer w-fit rounded-lg'>Chứng chỉ của bạn</div>
-            </div>
-            <div className='flex relative'>
-                <input type="text" placeholder='Tìm kiếm..' className='border bg-white px-2 py-1 rounded-lg focus:border-primary-500 shadow-sm' />
-                <div className=' absolute top-[50%] right-2 translate-y-[-50%] text-xl text-gray-500'><IoIosSearch /></div>
-            </div>
+      <div className="bg-gray-50 p-4 rounded-lg my-4 flex gap-4 items-center">
+        <div className="flex gap-1 flex-1">
+          {linkNavs.map((item) => {
+            return (
+              <Link
+                key={item.id}
+                onClick={() => setLinkNav(item.id)}
+                to={item.link}
+                className={
+                  " hover:shadow-sm  px-6 py-1 border border-transparent hover:border-gray-100 hover:bg-primary-50 cursor-pointer w-fit rounded-lg " +
+                  (item.id == linkNav && " shadow-sm  px-6 py-1 border bg-primary-50")
+                }
+              >
+                {item.title}
+              </Link>
+            );
+          })}
         </div>
+        <div className="flex relative">
+          <input
+            type="text"
+            placeholder="Tìm kiếm.."
+            className="border bg-white px-2 py-1 rounded-lg focus:border-primary-500 shadow-sm"
+          />
+          <div className=" absolute top-[50%] right-2 translate-y-[-50%] text-xl text-gray-500">
+            <IoIosSearch />
+          </div>
+        </div>
+      </div>
 
+      {isLoading ? (
+        <div className="flex-1 flex flex-col gap-2">
+          <CourseCollectionSke />
+          <CourseCollectionSke />
+        </div>
+      ) : (
         <div>
-        <div className="flex-1">
-                <ProductCollectItem />
-                <ProductCollectItem />
+          <div className="flex-1">
+            {courses && courses.length > 0 ? (
+              courses.map((item) => {
+                return (
+                  <ProductCollectItem
+                    key={item.id}
+                    course={item}
+                    type="progress"
+                  />
+                );
+              })
+            ) : (
+              <div className="text-center text-primary-500 py-5">
+                Chưa tham gia khóa học nào!
               </div>
-              <div className="pb-5 pt-8 px-4">
-                <div className="flex gap-1 justify-end">
-                  <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                    <FaAnglesLeft />
+            )}
+          </div>
+          {courses && courses.length > 0 && (
+            <div className="pb-5 pt-8 px-4">
+              <div className="flex gap-1 justify-end">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={
+                    (currentPage === 1
+                      ? "bg-gray-400 text-gray-500 cursor-not-allowed  "
+                      : "bg-primary-50 hover:bg-primary-500 hover:text-white text-primary-500 ") +
+                    "w-[48px] h-[48px] rounded-full flex justify-center items-center  font-bold  "
+                  }
+                >
+                  <FaAnglesLeft />
+                </button>
+
+                {Array.from({ length: totalPage }, (_, index) => (
+                  <div
+                    key={index + 1}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={
+                      (currentPage === index + 1
+                        ? "bg-primary-500 text-white "
+                        : "bg-primary-50 text-primary-500 ") +
+                      "w-[48px] h-[48px] cursor-pointer rounded-full flex justify-center items-center bg-primary-50 hover:bg-primary-500 hover:text-white  font-bold "
+                    }
+                  >
+                    {index + 1}
                   </div>
-                  <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-500 font-bold text-white">
-                    1
-                  </div>
-                  <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                    2
-                  </div>
-                  <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                    3
-                  </div>
-                  <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                    <FaAnglesRight />
-                  </div>
-                </div>
+                ))}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPage}
+                  className={
+                    (currentPage === totalPage
+                      ? "bg-gray-400 text-gray-500 cursor-not-allowed  "
+                      : "bg-primary-50 hover:bg-primary-500 hover:text-white text-primary-500 ") +
+                    "w-[48px] h-[48px] rounded-full flex justify-center items-center  font-bold  "
+                  }
+                >
+                  <FaAnglesRight />
+                </button>
               </div>
+            </div>
+          )}
         </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default MyCourse
+export default MyCourse;

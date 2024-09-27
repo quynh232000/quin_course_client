@@ -3,7 +3,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@font-face {
+  font-family: 'Great Vibes';
+  src: url('../../assets/fonts/GreatVibes-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 @layer base {
   * {
     @apply box-border list-none p-0 m-0 scroll-smooth;

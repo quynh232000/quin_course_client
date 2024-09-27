@@ -40,7 +40,7 @@ export const resendEmail = async (email: ResendEmail) => {
 };
 export const me = async () => {
   try {
-    const res = await request.GET(`me`);
+    const res = await request.GET(`auth/me`);
     return res;
   } catch (error) {
     console.log(error);

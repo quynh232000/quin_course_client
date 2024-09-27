@@ -1,14 +1,14 @@
 import { createContext, FC, ReactNode, useContext, useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
-import {  UserLogin } from "../../types/user";
+import { useNavigate } from "react-router-dom";
+import { UserLogin } from "../../types/user";
 import { me } from "../../services/UserService";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsLogin, setUser } from "../../redux/reducers/authReducer";
 import { RootState } from "../../redux/reducers";
-import { UserModel } from "../../types/post";
+import { MUser } from "../../types/app";
 interface AuthContextType {
   isLogin: boolean;
-  user: UserModel | null;
+  user: MUser | null;
   loginAction: (data: UserLogin) => void;
   logOut: () => void;
 }
@@ -34,8 +34,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       if (res.data) {
         // setUser(res.data.user);
         // setToken(res.token);
-        localStorage.setItem("TOKEN", JSON.stringify(res.token));
-        navigate("/dashboard");
+        localStorage.setItem("USER_TOKEN", JSON.stringify(res.token));
+        navigate("/");
         return;
       }
       throw new Error(res.message);
@@ -46,18 +46,25 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const dispatch = useDispatch();
   const isLogin = auth.isLogin;
   const user = auth.user;
+  const token = localStorage.getItem("USER_TOKEN") ?? "";
   useEffect(() => {
-    me().then((res) => {
-      if (res.status) {
-        dispatch(setUser(res.data.user));
-        dispatch(setIsLogin(true));
-        localStorage.setItem("CURRENT_USER", JSON.stringify(res.data.user));
-      } else {
-        localStorage.setItem("IS_LOGIN", JSON.stringify(false));
-        dispatch(setIsLogin(false));
-      }
-    });
-  }, []);
+    if (token) {
+      me().then((res) => {
+        if (res.status) {
+          dispatch(setUser(res.data));
+          dispatch(setIsLogin(true));
+          localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
+          localStorage.setItem("IS_LOGIN", JSON.stringify(true));
+        } else {
+          dispatch(setIsLogin(false));
+          dispatch(setUser(null));
+          localStorage.removeItem("CURRENT_USER");
+          localStorage.removeItem("USER_TOKEN");
+          localStorage.setItem("IS_LOGIN", JSON.stringify(false));
+        }
+      });
+    }
+  }, [token]);
 
   const logOut = () => {
     setUser(null);

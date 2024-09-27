@@ -3,14 +3,14 @@ import { privateRoutes, publicRoutes } from "./routes/routes";
 import "./components/GlobalStyles/GlobalStyles.css";
 import "./components/GlobalStyles/custom.css";
 
-// import PageNotFund from "./pages/PageNotFund";
 import { AuthProvider } from "./routes/provider/AuthProvider";
-// import PrivateRoute from "./routes/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
+import Error from "./pages/Error";
 
 function App() {
   return (
     <>
-      <main className="flex px-2 md:px-0 w-full flex-wrap h-screen ">
+      <main className="flex px-2 md:px-0 w-full flex-wrap h-screen relative">
         <AuthProvider>
           <Routes>
             {publicRoutes.map((item, index) => {
@@ -42,17 +42,8 @@ function App() {
                   {item.routes.map((route, index) => {
                     const Page = route.component;
                     return (
-                      <Route
-                      key={index}
-                          path={route.path}
-                          element={
-                            <>
-                              <Page />
-                            </>
-                          }
-                        />
-                      // <Route key={index} element={<PrivateRoute />}>
-                      //   <Route
+                      // <Route
+                      // key={index}
                       //     path={route.path}
                       //     element={
                       //       <>
@@ -60,14 +51,23 @@ function App() {
                       //       </>
                       //     }
                       //   />
-                      // </Route>
+                      <Route key={index} element={<PrivateRoute />}>
+                        <Route
+                          path={route.path}
+                          element={
+                            <>
+                              <Page />
+                            </>
+                          }
+                        />
+                      </Route>
                     );
                   })}
                 </Route>
               );
             })}
 
-            {/* <Route path="*" element={<PageNotFund />} /> */}
+            <Route path="*" element={<Error />} />
           </Routes>
         </AuthProvider>
       </main>

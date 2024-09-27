@@ -1,6 +1,6 @@
-import React from "react";
+
 import { IoIosSearch } from "react-icons/io";
-import ProductCollectItem from "../../components/items/ProductCollectItem";
+// import ProductCollectItem from "../../components/items/ProductCollectItem";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 
 function OrderHistory() {
@@ -37,8 +37,8 @@ function OrderHistory() {
 
       <div>
         <div className="flex-1">
-          <ProductCollectItem />
-          <ProductCollectItem />
+          {/* <ProductCollectItem />
+          <ProductCollectItem /> */}
         </div>
         <div className="pb-5 pt-8 px-4">
           <div className="flex gap-1 justify-end">

@@ -1,34 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserModel } from "../../types/user";
+import { MUser } from "../../types/app";
+// import { User } from "../../types/formData";
 
 interface SomeState {
-  user: UserModel;
+  user: MUser;
   isLogin: boolean;
 }
 const getUser = localStorage.getItem("CURRENT_USER");
 const user = getUser
-  ? JSON.parse(getUser)
-  : {
-      id: "",
-      uuid: "",
-      first_name: "",
-      last_name: "",
-      birthday: "",
-      email: "",
-      email_verified_at: "",
-      avatar: "",
-      thumbnail: "",
-      gender: "",
-      phone_number: "",
-      relationship: "",
-      location: "",
-      address: "",
-      description: "",
-      is_private: false,
-      is_banned: false,
-      created_at: "",
-      updated_at: "",
-    };
+  ? JSON.parse(getUser):
+  null;
 const initialState: SomeState = {
   user: user,
   isLogin: localStorage.getItem("IS_LOGIN")
@@ -44,7 +25,6 @@ const authReducer = createSlice({
     },
     setIsLogin(state, data) {
       state.isLogin = data.payload;
-      localStorage.setItem("IS_LOGIN", JSON.stringify(data.payload));
     },
   },
 });
