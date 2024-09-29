@@ -1,14 +1,13 @@
-import { FaAnglesLeft, FaArrowRightLong, FaCircleCheck } from "react-icons/fa6";
+import { FaAnglesLeft, FaArrowRightLong, FaCircleCheck, FaRegCircleQuestion } from "react-icons/fa6";
 import i_logo from "../assets/logo/logo-new.png";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import ProgressCircle from "../components/compoment/ProgressCircle";
-import { GoPencil } from "react-icons/go";
+// import { GoPencil } from "react-icons/go";
 import {
   FaAngleRight,
   FaChevronLeft,
   FaHourglassStart,
   FaLock,
-  FaRegNewspaper,
   FaYoutube,
 } from "react-icons/fa";
 import {
@@ -31,7 +30,7 @@ import { RootState } from "../redux/reducers";
 import TimeModal from "../components/Modals/TimeModal";
 
 import { GrMenu } from "react-icons/gr";
-import { IoNewspaperOutline } from "react-icons/io5";
+import { TbReportSearch } from "react-icons/tb";
 
 function Icon({ id = 1, open = 1 }) {
   return (
@@ -56,6 +55,7 @@ function Icon({ id = 1, open = 1 }) {
 function StudyLayout() {
   const dispatch = useDispatch();
   const { studyLog } = useSelector((state: RootState) => state.appReducer);
+  const { user } = useSelector((state: RootState) => state.authReducer);
 
   const [open, setOpen] = useState(0);
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
@@ -75,6 +75,7 @@ function StudyLayout() {
   const [openTop, setOpenTop] = useState(false);
   const [isShowSidebar, setIsShowSidebar] = useState(true);
   const [timeWaiting, setTimeWaiting] = useState<string>("");
+
   useEffect(() => {
     if (!slug) {
       navigate("/notfound");
@@ -125,12 +126,12 @@ function StudyLayout() {
       <TimeModal setOpenTop={setOpenTop} openTop={openTop} time={timeWaiting} />
       <div className="bg-primary-50 flex border-b shadow-sm  justify-between items-center">
         <div className="flex items-center gap-2">
-          <Link
-            to={"/"}
-            className="px-8 text-primary-700 py-5 hover:bg-primary-100"
+          <div
+            onClick={()=>navigate('/account/@'+user.username+'/courses')}
+            className="px-8 text-primary-700 py-5 hover:bg-primary-100 cursor-pointer"
           >
             <FaAnglesLeft />
-          </Link>
+          </div>
           <div className="flex items-center gap-6">
             <Link to={"/"}>
               <img className="w-[52px]" src={i_logo} alt="" />
@@ -149,7 +150,7 @@ function StudyLayout() {
               {userProgress?.length ?? 0}/{courseInfo?.total_steps} bài học
             </span>
           </div>
-          {!studyLog.nextStep && (
+          {!studyLog.nextStep ||Math.ceil(courseInfo?.percent_learning ?? 0) ==100 && (
             <Link
               to={"/certificate/" + courseInfo?.slug}
               className="text-primary-500 font-bold text-sm"
@@ -158,9 +159,12 @@ function StudyLayout() {
             </Link>
           )}
           <div className="flex items-center gap-2">
+            <Link to={'/account/@'+user.username} className="w-[32px] h-[32px]"><img className="w-full h-full rounded-full object-cover" src={user.avatar_url} alt="" /></Link>
+          </div>
+          {/* <div className="flex items-center gap-2">
             <GoPencil />
             Ghi chú
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex-1 w-full relative">
@@ -267,13 +271,13 @@ function StudyLayout() {
                                           <FaYoutube />
                                         )}
                                         {step.type == "quiz" && (
-                                          <FaRegNewspaper />
+                                          <FaRegCircleQuestion />
                                         )}
                                         {step.type == "article" && (
-                                          <IoNewspaperOutline />
+                                          <TbReportSearch />
                                         )}
                                       </div>
-                                      <span className="text-sm">
+                                      <span className="text-[12px]">
                                         {formatDuration(step.duration)}
                                       </span>
                                     </div>

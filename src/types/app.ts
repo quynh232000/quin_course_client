@@ -73,6 +73,7 @@ export interface MCourse {
   type: string;
   published_at: string;
   view_count: number;
+  isEnrollment:boolean;
   enrollment_count: number;
   video_type: string;
   video_url: string;
@@ -106,16 +107,19 @@ export interface BlogTag {
   id: number;
   tag_id: number;
   blog_id: number;
-  tag: Tag[];
+
+  tag: Tag;
 }
 export interface Tag {
   id: number;
   name: string;
   slug: string;
+  description:string;
 }
 export interface MBlog {
   id: number;
   title: string;
+  subtitle: string;
   slug: string;
   content: string;
   thumbnail_url: string;
@@ -129,7 +133,12 @@ export interface MBlog {
   deleted_at: Date;
   created_at: string;
   updated_at: string;
-  tags: BlogTag;
+  tags: BlogTag[];
+  user:MUser
+  is_loved: boolean;
+  is_saved: boolean;
+  love_counts: number;
+  date_saved:string;
 }
 export interface MLevel {
   id: number;
@@ -272,4 +281,11 @@ export interface MCertificate{
   username:string;
   fullname:string
   date:Date;
+}
+export interface MNote {
+  id: number
+  note: string
+  step_id: string
+  step: MStep
+  updated_at:Date
 }

@@ -9,9 +9,9 @@ interface ToastProps {
 }
 
 function ToastMessage({
-  title = "",
+  title = "Thành công!",
   message = "",
-  type = "info",
+  type = "success",
   duration = 3000,
 }: ToastProps) {
   const [isClose, setIsClose] = useState(false);

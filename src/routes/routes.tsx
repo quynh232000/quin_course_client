@@ -2,6 +2,8 @@ import AppLayout from "../layouts/AppLayout";
 import HeaderLayout from "../layouts/HeaderLayout";
 import ProfileLayout from "../layouts/ProfileLayout";
 import StudyLayout from "../layouts/StudyLayout";
+import BlogDetail from "../pages/blog/BlogDetail";
+import BlogTag from "../pages/blog/BlogTag";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
 import CheckoutError from "../pages/CheckoutError";
@@ -17,9 +19,12 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Teacher from "../pages/Teacher";
 import ChangePassword from "../pages/user/ChangePassword";
+import MyBlogs from "../pages/user/MyBlogs";
 import MyCourse from "../pages/user/MyCourse";
+import NewPost from "../pages/user/NewPost";
 import OrderHistory from "../pages/user/OrderHistory";
 import Profile from "../pages/user/Profile";
+import SavedBlog from "../pages/user/SavedBlog";
 const publicRoutes = [
   {
     layout: AppLayout,
@@ -55,6 +60,18 @@ const publicRoutes = [
       {
         path: "/forgot-password",
         component: ForgotPassword,
+      },
+      {
+        path: "/blogs",
+        component: BlogTag,
+      },
+      {
+        path: "/blog/:slug",
+        component: BlogDetail,
+      },
+      {
+        path: "/blogs/tag/:slug",
+        component: BlogTag,
       },
 
 
@@ -114,6 +131,22 @@ const privateRoutes = [
       {
         path: "/certificate/:slug",
         component: CompletedCourse,
+      },
+      {
+        path: "/me/bookmark",
+        component: SavedBlog,
+      },
+      {
+        path: "/me/my-blogs",
+        component: MyBlogs,
+      },
+      {
+        path: "/blog/create",
+        component: NewPost,
+      },
+      {
+        path: "/blog/:id/edit",
+        component: NewPost,
       },
     ],
   },

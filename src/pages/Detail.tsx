@@ -6,7 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import { CiCircleCheck } from "react-icons/ci";
 import { FaAngleDown, FaChevronRight, FaStar } from "react-icons/fa";
-import { FaCirclePlay, FaPeopleGroup } from "react-icons/fa6";
+import { FaArrowRightLong, FaCirclePlay, FaPeopleGroup } from "react-icons/fa6";
 // import { IoIosSend } from "react-icons/io";
 import { MdOndemandVideo, MdOutlineQuiz } from "react-icons/md";
 import ReviewItem from "../components/items/ReviewItem";
@@ -32,6 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/reducers/appReducer";
 import { RootState } from "../redux/reducers";
 import ToastMessage from "../components/compoment/ToastMessage";
+import DefaultSke from "../components/skeleton/DefaultSke";
 
 function Detail() {
   const navigate = useNavigate();
@@ -46,12 +47,16 @@ function Detail() {
   const [intends, setIntends] = useState<MIntend[]>([]);
   const [courseSameAuthor, setCourseSameAuthor] = useState<MCourse[]>([]);
   const [teacherDashboard, setTeacherDashboard] = useState<MTeacherDashboard>();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     if (slug) {
       SGetCourseSlug(slug).then((res) => {
+        setIsLoading(false);
+
         if (res.status) {
-          document.title = res.data.course.title
+          document.title = res.data.course.title;
           setCourse(res.data.course);
           setCurrentCate(res.data.course.category);
           setCategories(res.data.course.category.parent);
@@ -59,7 +64,7 @@ function Detail() {
           setSections(res.data.course.sections);
           setReviews(res.data.course.reviews);
           setIntends(res.data.course.intends);
-          setTeacherDashboard(res.data.teacher_dashboard)
+          setTeacherDashboard(res.data.teacher_dashboard);
           // get course same author
           SGetCourseCollection(
             `?limit=8&sort=latest&teacher_id=${res?.data?.course?.user?.id}`
@@ -75,13 +80,13 @@ function Detail() {
     } else {
       navigate("/error");
     }
-  }, []);
+  }, [slug]);
 
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
 
-  // handle add or buy or enroll course 
+  // handle add or buy or enroll course
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [enrollSuccess, setEnrollSuccess] = useState(false);
   const [enrollErorr, setEnrollError] = useState("");
   const [toastCart, setToastCart] = useState<{
@@ -91,12 +96,9 @@ function Detail() {
   }>({ status: false, type: "error", message: "" });
   const [btnAddCart, setBtnAddCart] = useState({ add: false, buynow: false });
 
-
   const handleEnroll = () => {
     if (isLogin && course) {
-      setIsLoading(true);
       SEnrollCourse(course.id).then((res) => {
-        setIsLoading(false);
         if (res.status) {
           setEnrollSuccess(true);
         } else {
@@ -113,7 +115,7 @@ function Detail() {
   const dispatch = useDispatch();
 
   const handleCart = (type: string) => {
-    if (isLogin &&course) {
+    if (isLogin && course) {
       SAddCart(course.id).then((res) => {
         if (res.status) {
           dispatch(addToCart(course));
@@ -165,7 +167,12 @@ function Detail() {
       }
     }
   };
-  return (
+  return isLoading ? (
+    <div className="w-content m-auto">
+        <DefaultSke/>
+        <DefaultSke/>
+    </div>
+  ) : (
     <div className="flex flex-col gap-[72px] pb-[32px] ">
       {enrollErorr && <ToastMessage type="error" message={enrollErorr} />}
       {toastCart.status && (
@@ -269,18 +276,35 @@ function Detail() {
                 {course && course.price > 0 ? (
                   <div className="flex gap-4">
                     <button
-                    
-                      onClick={()=>handleCart('buynow')}
+                      onClick={() => handleCart("buynow")}
                       className="bg-primary-500 text-center flex-1 hover:bg-primary-600 text-white py-2 rounded-lg"
                     >
                       Mua ngay
                     </button>
                     <button
-                     onClick={()=>handleCart('addcart')}
+                      onClick={() => handleCart("addcart")}
                       className="border-primary-500 border  flex-1 text-center text-primary-500 hover:bg-primary-50 py-2 rounded-lg"
                     >
                       Thêm giỏ hàng
                     </button>
+                  </div>
+                ) : course?.isEnrollment ? (
+                  <div>
+                    <Link
+                      to={"/learning/" + course?.slug}
+                      className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
+                    >
+                      <FaArrowRightLong /> Vào học
+                    </Link>
+                  </div>
+                ) : enrollSuccess ? (
+                  <div>
+                    <Link
+                      to={"/learning/" + course?.slug}
+                      className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
+                    >
+                      <FaArrowRightLong /> Vào học
+                    </Link>
                   </div>
                 ) : (
                   <div className="flex gap-4" onClick={handleEnroll}>
@@ -333,13 +357,14 @@ function Detail() {
               </div> */}
               <div>
                 <div className="flex items-center gap-2">
-                  <FaPeopleGroup className="text-primary-500"/>
-                  {teacherDashboard &&teacherDashboard.count_students} học viên
+                  <FaPeopleGroup className="text-primary-500" />
+                  {teacherDashboard && teacherDashboard.count_students} học viên
                 </div>
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <FaCirclePlay className="text-primary-500"/> {teacherDashboard &&teacherDashboard.count_courses} khóa học
+                  <FaCirclePlay className="text-primary-500" />{" "}
+                  {teacherDashboard && teacherDashboard.count_courses} khóa học
                 </div>
               </div>
             </div>
@@ -576,10 +601,13 @@ function Detail() {
           </button>
         </div>
         <div className="grid grid-cols-4 gap-3 mt-5">
-          {courseSameAuthor && courseSameAuthor.length >0 ?courseSameAuthor.map(item=>{
-            return <ProductItem key={item.id} course={item} />
-          }):<></>}
-         
+          {courseSameAuthor && courseSameAuthor.length > 0 ? (
+            courseSameAuthor.map((item) => {
+              return <ProductItem key={item.id} course={item} />;
+            })
+          ) : (
+            <></>
+          )}
         </div>
       </section>
     </div>

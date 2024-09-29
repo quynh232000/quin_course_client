@@ -146,12 +146,12 @@ function Header() {
                       </Link>
                     </MenuItem>
                     <MenuItem className="w-full">
-                      <Link className="" to={"/my-blogs"}>
+                      <Link className="" to={"/me/my-blogs"}>
                         Bài viết của tôi
                       </Link>
                     </MenuItem>
                     <MenuItem className="w-full">
-                      <Link className="" to={"/blog/saved"}>
+                      <Link className="" to={"/me/bookmark"}>
                         Bài viết đã lưu
                       </Link>
                     </MenuItem>

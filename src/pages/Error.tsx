@@ -1,24 +1,24 @@
 import { IoHomeOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import Header from "../components/shared/headers/Header";
-import Footer from "../components/shared/footers/Footer";
+// import Header from "../components/shared/headers/Header";
+// import Footer from "../components/shared/footers/Footer";
 
 function Error() {
   return (
     <div className="w-full">
-      <Header/>
+      {/* <Header/> */}
       <section className="bg-white dark:bg-gray-900">
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
         <div className="mx-auto max-w-screen-sm text-center">
           <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">
             404
           </h1>
-          <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">
-            Something's missing.
+          <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white py-5">
+          Không tìm thấy nội dung 😓
           </p>
-          <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-            Sorry, we can't find that page. You'll find lots to explore on the
-            home page.{" "}
+          <p className="mb-4 text-md font-light text-gray-500 dark:text-gray-400">
+          URL của nội dung này đã bị thay đổi hoặc không còn tồn tại.
+          Nếu bạn đang lưu URL này, hãy thử truy cập lại từ trang chủ thay vì dùng URL đã lưu.
           </p>
           <div className="flex justify-center">
             <Link
@@ -31,7 +31,7 @@ function Error() {
         </div>
       </div>
     </section>
-    <Footer/>
+    {/* <Footer/> */}
     </div>
   );
 }

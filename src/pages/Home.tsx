@@ -33,6 +33,7 @@ import CourseSkeleton from "../components/skeleton/CourseSkeleton";
 import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
 import TopicSke from "../components/skeleton/TopicSke";
 import NewsSke from "../components/skeleton/NewsSke";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [banners, setBanners] = useState<MBanner[] | null>(null);
@@ -403,9 +404,9 @@ const Home = () => {
           <div className="flex gap-4 items-center">
             <div className="font-bold text-3xl">Tin tức mỗi ngày</div>
           </div>
-          <button className="flex items-center text-primary-500 gap-2">
+          <Link to={'/blogs'} className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
-          </button>
+          </Link>
         </div>
         {l_news ? (
           <div className="grid grid-cols-2 gap-3 mt-5">

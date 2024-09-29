@@ -1,8 +1,7 @@
 import axios from "axios";
+import { REACT_APP_API_URL } from "../contants/Contant";
 
-const REACT_APP_API_URL ="http://localhost:8000/api/"
-// const REACT_APP_API_URL = "http://192.168.1.172:8000/api/";
-// const REACT_APP_API_URL = "https://teacher.mr-quynh.com/api/";
+
 let token = localStorage.getItem("USER_TOKEN") ?? "";
 token = token ? token.replace(/"/g, "") : "";
 const request = axios.create({
