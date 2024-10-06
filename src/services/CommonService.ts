@@ -1,4 +1,4 @@
-import { FormLogin, FormRegister } from "../types/formData";
+import {  ChangePasswordObj, FormLogin, FormRegister } from "../types/formData";
 import * as request from "../utils/HttpRequest";
 export const SGetBanners = async (params?: string) => {
   try {
@@ -359,9 +359,90 @@ export const SDeleteNote = async (note_id: number) => {
   }
 };
 
-export const SUpdateNote = async (note_id: number,note:string) => {
+export const SUpdateNote = async (note_id: number, note: string) => {
   try {
-    const res = await request.POST(`notes/update/${note_id}`,{note});
+    const res = await request.POST(`notes/update/${note_id}`, { note });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SComment = async (
+  comment: string,
+  commentable_id: number,
+  type: string
+) => {
+  try {
+    const res = await request.POST(`comments/create`, {
+      comment,
+      commentable_id,
+      type,
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SGetComment = async (commentable_id: number, params: string) => {
+  try {
+    params = params ? params : "";
+    const res = await request.GET(`comments/list/${commentable_id}${params}`);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SDeleteComment = async (id: number) => {
+  try {
+    const res = await request.POST(`comments/delete/${id}`);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SReactionComment = async (
+  id: number,
+  type: "like" | "love" | "haha" | "wow" | string,
+  commentable_type: string
+) => {
+  try {
+    const res = await request.POST(`reaction/${id}`, {
+      type,
+      commentable_type,
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SUpdateComment = async (id: number, comment: string) => {
+  try {
+    const res = await request.POST(`comments/update/${id}`, { comment });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SChangePassword = async (data: ChangePasswordObj) => {
+  try {
+    const res = await request.POST(`auth/change_password`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SGetMyOrder = async () => {
+  try {
+    const res = await request.GET(`order/my_order`);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const SSendReviewCourse = async (course_id:number,content:string,rating:number) => {
+  try {
+    const res = await request.POST(`reviews/create`,{course_id,content,rating});
     return res;
   } catch (error) {
     console.log(error);

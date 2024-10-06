@@ -9,15 +9,22 @@ import { MCourse } from "../../types/app";
 import CourseCollectionSke from "../../components/skeleton/CourseCollectionSke";
 import { Link, useLocation } from "react-router-dom";
 
-const linkNavs = [
-  { id: 1, title: "Tất cả", link: "" },
-  { id: 2, title: "Đã hoàn thành", link: "?type=completed" },
-  { id: 3, title: "Chưa hoàn thành", link: "?type=studying" },
-  { id: 4, title: "Chứng chỉ", link: "?type=certificate" },
+type LinkNav = {
+  id: number;
+  title: string;
+  link: string;
+  type: string;
+};
+const linkNavs: LinkNav[] = [
+  { id: 1, title: "Tất cả", link: "", type: "all" },
+  { id: 2, title: "Đã hoàn thành", link: "?type=completed", type: "completed" },
+  { id: 3, title: "Chưa hoàn thành", link: "?type=studying", type: "studying" },
+  // { id: 4, title: "Chứng chỉ", link: "?type=certificate" },
 ];
 function MyCourse() {
   const { currentUser } = useSelector((state: RootState) => state.appReducer);
   const [courses, setCourses] = useState<MCourse[]>([]);
+  const [coursesTotal, setCoursesTotal] = useState<MCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
@@ -39,6 +46,7 @@ function MyCourse() {
           setIsLoading(false);
           if (res.status) {
             setCourses(res.data.courses);
+            setCoursesTotal(res.data.courses);
             setTotalPage(Math.ceil(res.meta.total / res.meta.per_page));
           }
         }
@@ -49,6 +57,24 @@ function MyCourse() {
     if (page >= 1 && page <= totalPage) {
       setCurrentPage(page);
     }
+  };
+  const handleSortBy = (type: string) => {
+    switch (type) {
+      case "completed":
+        setCourses(coursesTotal.filter((c) => c.percent_learning == 100));
+        break;
+      case "studying":
+        setCourses(coursesTotal.filter((c) => c.percent_learning < 100));
+
+        break;
+      default:
+        setCourses(coursesTotal);
+        break;
+    }
+  };
+  const handleActiveNav = (data: LinkNav) => {
+    setLinkNav(data.id);
+    handleSortBy(data.type);
   };
 
   return (
@@ -61,11 +87,12 @@ function MyCourse() {
             return (
               <Link
                 key={item.id}
-                onClick={() => setLinkNav(item.id)}
+                onClick={() => handleActiveNav(item)}
                 to={item.link}
                 className={
                   " hover:shadow-sm  px-6 py-1 border border-transparent hover:border-gray-100 hover:bg-primary-50 cursor-pointer w-fit rounded-lg " +
-                  (item.id == linkNav && " shadow-sm  px-6 py-1 border bg-primary-50")
+                  (item.id == linkNav &&
+                    " shadow-sm  px-6 py-1 border bg-primary-50")
                 }
               >
                 {item.title}
@@ -73,7 +100,7 @@ function MyCourse() {
             );
           })}
         </div>
-        <div className="flex relative">
+        <div className=" relative hidden md:flex ">
           <input
             type="text"
             placeholder="Tìm kiếm.."

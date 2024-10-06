@@ -10,14 +10,11 @@ function Profile() {
   );
   const { currentUser } = useSelector((state: RootState) => state.appReducer);
 
-  if(!currentUser || !user){
-    return <DefaultSke/>
+  if (!currentUser || !user) {
+    return <DefaultSke />;
   }
   return (
-    
-    
     <div className="px-5 ">
-      
       <div className="font-bold text-xl">
         {isLogin ? "Hồ sơ của bạn" : "Thông tin cá nhân"}{" "}
       </div>
@@ -43,24 +40,28 @@ function Profile() {
       </div>
 
       <div className="flex flex-col gap-3 py-3">
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Email
           </label>
           <div className="flex flex-1 gap-5">
-            
             <div className="border py-2 px-3 rounded-lg focus:border-primary-500 w-50">
-            {currentUser.email}
+              {currentUser.email}
             </div>
             <div className="flex items-center gap-2 justify-center flex-1 ">
               <span>Trạng thái:</span>
-              <span className="text-sm text-success-500 font-bold bg-success-50 px-2 py-1 rounded-full">
+
+              <div className="text-sm relative text-success-500 font-bold bg-success-50 px-2 py-1 rounded-full flex">
                 Đang hoạt động
-              </span>
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Họ đệm
           </label>
@@ -71,29 +72,29 @@ function Profile() {
             className="border py-2 px-3 flex-1 rounded-lg focus:border-primary-500"
           />
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Tên
           </label>
           <input
             type="text"
             placeholder="Nguyễn Văn Quynh"
-           defaultValue={currentUser.last_name}
+            defaultValue={currentUser.last_name}
             className="border py-2 px-3 flex-1 rounded-lg focus:border-primary-500"
           />
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Số điện thoại
           </label>
           <input
             type="text"
             placeholder="Cập nhật"
-           defaultValue={currentUser.phone_number}
+            defaultValue={currentUser.phone_number}
             className="border py-2 px-3 flex-1 rounded-lg focus:border-primary-500"
           />
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Vai trò:
           </label>
@@ -110,7 +111,7 @@ function Profile() {
             })}
           </div>
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="w-15 font-bold text-primary-800">
             Tham gia vào:
           </label>
@@ -133,17 +134,19 @@ function Profile() {
           Quản lý liên kết tới các trang mạng xã hội của bạn
         </span>
         <div className="flex flex-col gap-3 mt-5">
-          {currentUser && currentUser.socials && currentUser.socials.length > 0 ? (
+          {currentUser &&
+          currentUser.socials &&
+          currentUser.socials.length > 0 ? (
             currentUser.socials.map((item) => {
               return (
-                <div className="flex items-center" key={item.id}>
+                <div className="flex flex-col md:flex-row md:items-center" key={item.id}>
                   <label htmlFor="" className="w-15 font-bold text-primary-800">
                     {item.name}
                   </label>
                   <input
                     type="text"
                     placeholder="Cập nhật"
-                   defaultValue={item.url}
+                    defaultValue={item.url}
                     className="border py-2 px-3 flex-1 rounded-lg focus:border-primary-500"
                   />
                 </div>
@@ -156,7 +159,7 @@ function Profile() {
         {currentUser.id == user.id && (
           <div className="mt-5">
             <button className="py-2 px-8 bg-primary-500 text-white rounded-lg">
-              Cập nhật thông tin 
+              Cập nhật thông tin
             </button>
           </div>
         )}

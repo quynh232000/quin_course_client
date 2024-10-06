@@ -194,12 +194,12 @@ function Register() {
   };
 
   return (
-    <div className="w-content m-auto my-[32px] ">
+    <div className="w-full px-5 xl:px-0 xl:w-content m-auto my-[32px] ">
       <div className="border rounded-lg flex gap-5 shadow-sm px-5 py-12">
-        <div className="flex-1 px-12">
+        <div className="flex-1 px-12 hidden lg:block">
           <img src={i_register} alt="" />
         </div>
-        <div className="w-35 p-3">
+        <div className="lg:w-35 w-full p-3">
           <div>
             <div className="font-bold text-3xl">Tạo tài khoản</div>
             <div className="text-sm text-gray-500 mt-1">

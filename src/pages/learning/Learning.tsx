@@ -30,6 +30,7 @@ function Learning() {
   const step_uuid = searchParams.get("id");
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    setIsAnswerCorrect(false);
     setLoading(true);
     if (step_uuid && currentCourse) {
       SGetLearningStep(currentCourse.id, step_uuid).then((res) => {
@@ -50,22 +51,26 @@ function Learning() {
         }
       });
     }
-    setNavbar('dashboard');
-    
+    setNavbar("dashboard");
   }, [currentCourse]);
 
   // select quiz
   const [quizSelect, setQuizSelect] = useState<number | null>(null);
   const [answer, setAnswer] = useState<MAnswer | null>(null);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const handleQuizSelect = (id: number) => {
     setQuizSelect(id);
     setAnswer(null);
+    setIsAnswerCorrect(false);
   };
   const handleAnswer = () => {
     if (quizSelect) {
       SUserQuiz(quizSelect).then((res) => {
         if (res.status) {
           setAnswer(res.data);
+          if (res.data.is_correct) {
+            setIsAnswerCorrect(true);
+          }
           setQuizSelect(null);
         }
       });
@@ -73,10 +78,10 @@ function Learning() {
   };
   // navbar
   // modal comment
-  const [isOpenComment,setIsOpenComment] = useState(false)
-  const handleOpenComment=()=>{
-    setIsOpenComment(true)
-  }
+  const [isOpenComment, setIsOpenComment] = useState(false);
+  const handleOpenComment = () => {
+    setIsOpenComment(true);
+  };
   return (
     <div className="flex w-full  absolute top-0 left-0 right-0 bottom-0 scrollbar_custom overflow-y-scroll">
       {loading ? (
@@ -85,7 +90,7 @@ function Learning() {
         </div>
       ) : (
         <div className="w-full  ">
-          {answer && answer.is_correct && <Congratulation />}
+          {isAnswerCorrect ? <Congratulation /> : ""}
           <div className=" relative">
             <div className=" absolute top-0 left-0 right-0 z-10 hidden">
               <img
@@ -116,7 +121,7 @@ function Learning() {
                </div>
              </div> */}
                 </div>
-                <div className="py-8 px-12 flex justify-between">
+                <div className="py-8 md:px-12 px-5 flex justify-between">
                   <div>
                     <h4 className="font-bold text-2xl text-primary-900">
                       {step_info?.title}
@@ -139,7 +144,7 @@ function Learning() {
             )}
             {/* view question */}
             {step_info && step_info?.type == "quiz" && (
-              <div className="p-12 pt-8 ">
+              <div className="md:p-12 p-5 pt-8 ">
                 <div className="p-8 shadow-sm border">
                   <div className="font-bold text-2xl text-primary-900">
                     {step_info.title}
@@ -233,18 +238,36 @@ function Learning() {
               </div>
             )}
           </div>
-          <div className="px-12  shadow-sm">
+          <div className="md:px-12 px-5  shadow-sm">
             <div className="flex border-t border-b">
-              <div onClick={()=>setNavbar('dashboard')} 
-              className={"py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent "+(navbar =='dashboard' &&'text-primary-500 bg-primary-50 border-primary-500')}>
+              <div
+                onClick={() => setNavbar("dashboard")}
+                className={
+                  "py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent " +
+                  (navbar == "dashboard" &&
+                    "text-primary-500 bg-primary-50 border-primary-500")
+                }
+              >
                 Tổng quan
               </div>
-              <div onClick={()=>setNavbar('note')} 
-              className={"py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent "+(navbar =='note' &&'text-primary-500 bg-primary-50 border-primary-500')}>
+              <div
+                onClick={() => setNavbar("note")}
+                className={
+                  "py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent " +
+                  (navbar == "note" &&
+                    "text-primary-500 bg-primary-50 border-primary-500")
+                }
+              >
                 Ghi chú
               </div>
-              <div onClick={handleOpenComment} 
-              className={"py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent "+(navbar =='question' &&'text-primary-500 bg-primary-50 border-primary-500')}>
+              <div
+                onClick={handleOpenComment}
+                className={
+                  "py-2 px-5 font-bold text-gray-700 hover:bg-gray-50 w-fit border-b-2 cursor-pointer border-transparent " +
+                  (navbar == "question" &&
+                    "text-primary-500 bg-primary-50 border-primary-500")
+                }
+              >
                 Hỏi đáp
               </div>
             </div>
@@ -252,8 +275,8 @@ function Learning() {
               {/* content tong quan */}
               {navbar == "dashboard" && (
                 <div>
-                  <div className="flex border-b py-4 gap-5">
-                    <div className="w-25 font-bold text-gray-500">
+                  <div className="flex flex-col md:flex-row border-b py-4 gap-5">
+                    <div className="w-full md:w-25 font-bold text-gray-500">
                       Nội dung bài học
                     </div>
                     <div className="flex-1 border-l pl-5">
@@ -272,8 +295,8 @@ function Learning() {
                  </div> */}
                     </div>
                   </div>
-                  <div className="flex border-b py-4 gap-5">
-                    <div className="w-25 font-bold text-gray-500">
+                  <div className="flex border-b py-4 flex-col md:flex-row gap-5">
+                    <div className="w-full md:w-25 font-bold text-gray-500">
                       Bạn sẽ học được gì sau khóa học này?
                     </div>
                     <div className="flex-1 border-l pl-5">
@@ -293,8 +316,16 @@ function Learning() {
                   </div>
                 </div>
               )}
-              {navbar =='note' && step_info && <LearningNote step={step_info} />}
-              {isOpenComment  && <ModalComment isOpenComment ={isOpenComment} setIsOpenComment={setIsOpenComment}/>}
+              {navbar == "note" && step_info && (
+                <LearningNote step={step_info} />
+              )}
+              {isOpenComment && step_info && (
+                <ModalComment
+                  step={step_info}
+                  isOpenComment={isOpenComment}
+                  setIsOpenComment={setIsOpenComment}
+                />
+              )}
             </div>
           </div>
         </div>

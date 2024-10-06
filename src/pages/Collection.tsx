@@ -11,7 +11,7 @@ import {
   SGetLevels,
   SGetTeachers,
 } from "../services/CommonService";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import i_notfund from "../assets/icons/notfund.png";
 import CourseSkeleton from "../components/skeleton/CourseSkeleton";
 import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
@@ -76,16 +76,21 @@ function Collection() {
   }, [freeType]);
 
   const { slug } = useParams();
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const search = searchParams.get("q");
   useEffect(() => {
     setLoadColec(true);
-
     const f_level = level ? "&level=" + level : "";
     const f_duration = duration ? "&duration=" + duration : "";
     const f_typePrice = typePrice ? "&type=" + typePrice : "";
     const f_star = star ? "&star=" + star : "";
     const f_sort = sortBy ? "&sort=" + sortBy : "";
+    const f_slug = slug ? "&slug_cate=" + slug : "";
+    const f_search = search ? "&search=" + search : "";
     SGetCourseCollection(
-      `?limit=4&page=${currentPage}&slug_cate=${slug}${f_sort}${f_level}${f_duration}${f_typePrice}${f_star}`
+      `?limit=4&page=${currentPage}${f_slug}${f_sort}${f_level}${f_duration}${f_typePrice}${f_star}${f_search}`
     ).then((res) => {
       setLoadColec(false);
       if (res.status) {
@@ -93,10 +98,13 @@ function Collection() {
         setCateInfo(res.data.category);
         setTotalPage(Math.ceil(res.meta.total / res.meta.per_page));
         setCountItems(res.meta.total);
-        document.title = res.data.category.name ?? "Tất cả khóa học";
+        let title = "Tất cả khóa học"
+        if(res.data.category?.name) title = res.data.category?.name
+        if(search) title ='Tìm kiếm "'+search+'"'
+        document.title =title   ;
       }
     });
-  }, [slug, currentPage, sortBy, level, duration, typePrice, star]);
+  }, [slug, currentPage, sortBy, level, duration, typePrice, star,search]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPage) {
@@ -114,7 +122,7 @@ function Collection() {
 
   return (
     <div className="">
-      <div className="w-content m-auto flex flex-col gap-[72px] py-[32px] ">
+      <div className="w-full px-5 xl:px-0 xl:w-content m-auto flex flex-col gap-[72px] py-[32px] ">
         {/* kh free */}
         <section className="w-full">
           <div className="flex justify-between items-center">
@@ -154,7 +162,7 @@ function Collection() {
               <CourseSkeleton />
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-3 mt-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
               {courseFee &&
                 courseFee.length > 0 &&
                 courseFee.map((item) => {
@@ -167,7 +175,7 @@ function Collection() {
         <section className="w-full">
           <div className="flex justify-between items-center">
             <div className="flex gap-4 items-center">
-              <div className="font-bold text-3xl">Giảng viên tiêu biểu</div>
+              <div className="font-bold text-2xl md:text-3xl">Giảng viên tiêu biểu</div>
             </div>
             {/* <button className="flex items-center text-primary-500 gap-2">
               Xem tất cả <FaChevronRight />
@@ -180,7 +188,7 @@ function Collection() {
               <TeacherSkeleton />
             </div>
           ) : (
-            <div className="grid grid-cols-5 gap-3 mt-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-5">
               {teachers &&
                 teachers.length > 0 &&
                 teachers.map((item) => {
@@ -191,14 +199,14 @@ function Collection() {
         </section>
         {/* filter */}
         <section>
-          <div className="flex justify-between items-center">
+          <div className="flex md:flex-row flex-col md:justify-between md:items-center">
             <div className="flex gap-4 items-center">
-              <div className="font-bold text-3xl">
+              <div className="font-bold lg:text-3xl text-2xl">
                 {" "}
                 {cateInfo
                   ? `Tìm thấy (${countItems}) khóa học về` +
                     ` '${cateInfo.name}'`
-                  : "Tất cả khóa học"}
+                  :search?'Tìm kiếm "'+search+'"': "Tất cả khóa học"}
               </div>
             </div>
             <div>
@@ -214,12 +222,12 @@ function Collection() {
               </Select>
             </div>
           </div>
-          <div className="flex gap-2 items-center border py-2 px-2 rounded-lg my-3 font-bold">
+          <div className="md:flex hidden gap-2 items-center border py-2 px-2 rounded-lg my-3 font-bold ">
             <IoMdInformationCircle /> Bạn không biết chắc? Tất cả khóa học đều
             được đảm bảo hoàn tiền trong 7 ngày.
           </div>
-          <div className="flex gap-4">
-            <div className="w-30">
+          <div className="flex flex-col  lg:flex-row gap-4">
+            <div className="  lg:w-30 w-full grid grid-cols-2 lg:grid-cols-1">
               <div>
                 <div className="font-bold border-t border-b bg-gray-50 p-2 px-3 flex items-center gap-2">
                   <FaAnglesRight />

@@ -1,5 +1,4 @@
 import {
-  FaGift,
   FaLock,
   FaRegEdit,
   FaTruck,
@@ -10,6 +9,7 @@ import Header from "../components/shared/headers/Header";
 import {
   Link,
   Outlet,
+  useLocation,
   // useLocation,
   useNavigate,
   useParams,
@@ -22,30 +22,44 @@ import { MUser } from "../types/app";
 import { SGetUserInfo } from "../services/CommonService";
 import { setCurrentUser } from "../redux/reducers/appReducer";
 import ProfileSibarSke from "../components/skeleton/ProfileSibarSke";
+import DefaultSke from "../components/skeleton/DefaultSke";
 function ProfileLayout() {
   const { username } = useParams();
   const [userInfo, setUserInfo] = useState<MUser>();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const pathUrl = location.pathname;
+  const { user,isLogin } = useSelector((state: RootState) => state.authReducer);
+  const [isLoading, setIsLoading] = useState(false);
+ 
   useEffect(() => {
-    setIsLoading(true);
+   
     if (username) {
-      SGetUserInfo(username?.split("@")[1]).then((res) => {
-        setIsLoading(false);
-        if (res.status) {
-          document.title =
-            res.data.first_name + " " + res.data.last_name + " | Quin Course";
-          setUserInfo(res.data);
-          dispatch(setCurrentUser(res.data));
-        } else {
-          navigate("/error");
-        }
-      });
+      const check_username = username?.split("@")[1];
+      if (check_username == user.username) {
+        setUserInfo(user);
+        dispatch(setCurrentUser(user));
+      } else {
+        setIsLoading(true);
+        SGetUserInfo(check_username).then((res) => {
+          setIsLoading(false);
+          if (res.status) {
+            document.title =
+              res.data.first_name + " " + res.data.last_name + " | Quin Course";
+            setUserInfo(res.data);
+            dispatch(setCurrentUser(res.data));
+          } else {
+            navigate("/error");
+          }
+        });
+      }
     } else {
-      navigate("/error");
+      setUserInfo(user);
+      dispatch(setCurrentUser(user));
     }
-  }, [username]);
+  }, [user]);
   // const [currentUrl, setCurrentUrl] = useState("");
 
   // const location = useLocation();
@@ -53,19 +67,22 @@ function ProfileLayout() {
   //   const url = location.pathname + location.search;
   //   setCurrentUrl(url);
   // }, []);
+  if(!isLogin){
+    navigate("/login");
+    return;
+  }
 
-  const { user } = useSelector((state: RootState) => state.authReducer);
   return (
     <div className="flex flex-col w-full text-grey-900 min-h-[100vh] bg-[#fefefe]">
       <Header />
       <div className="flex-1 mb-8">
-        <div className="flex w-content m-auto gap-5">
-          <div className="w-20 border-r border-l border-b rounded-b-lg shadow-sm bg-white h-fit">
+        <div className="flex flex-col md:flex-row md:w-content w-full  m-auto gap-5">
+          <div className="md:w-20 w-full border-r border-l border-b rounded-b-lg shadow-sm bg-white h-fit">
             {isLoading ? (
               <ProfileSibarSke />
             ) : (
               <>
-                <div className="flex flex-col items-center py-5 border-b">
+                <div className=" flex-col items-center py-5 border-b hidden md:flex">
                   <div className="w-[116px] h-[116px] border rounded-full shadow-sm">
                     <img
                       className="w-full h-full object-cover rounded-full"
@@ -77,7 +94,7 @@ function ProfileLayout() {
                     />
                   </div>
                   <div className="font-bold mt-2 text-primary-900">
-                    {userInfo?.first_name + " " + userInfo?.last_name ?? "---"}
+                    {userInfo?.first_name + " " + userInfo?.last_name }
                   </div>
 
                   {userInfo?.id == user.id && (
@@ -87,40 +104,63 @@ function ProfileLayout() {
                   )}
                 </div>
 
-                <div className="py-4">
+                <div className="py-4 flex md:flex-col">
                   <Link
                     to={"/account/@" + userInfo?.username}
+                    title="Tài khoản"
                     className={
-                      "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500 border-transparent hover:bg-primary-50"
+                      "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500  hover:bg-primary-50" +
+                      (pathUrl == "/account/@" + userInfo?.username &&
+                        " text-primary-500 border-primary-500 bg-primary-50")
                     }
                   >
-                    <FaUser /> Hồ sơ
+                    <FaUser /><div className=" "> Hồ sơ</div>
                   </Link>
                   <Link
+                  title="Khóa học"
                     to={"/account/@" + userInfo?.username + "/courses"}
-                    className="flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500 border-transparent hover:bg-primary-50"
+                    className={
+                      "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500  hover:bg-primary-50 " +
+                      (pathUrl ==
+                        "/account/@" + userInfo?.username + "/courses" &&
+                        " text-primary-500 border-primary-500 bg-primary-50")
+                    }
                   >
-                    <FaUserGraduate /> Khóa học
+                    <FaUserGraduate /> <div className=" ">Khóa học</div>
                   </Link>
                   {user && userInfo?.id == user.id && (
                     <>
                       <Link
-                        to={"/user/orderhistory"}
-                        className="flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500 border-transparent hover:bg-primary-50"
+                      title="Lịch sử đơn hàng"
+                        to={"/account/orderhistory"}
+                        className={
+                          "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500  hover:bg-primary-50" +
+                          (pathUrl == "/account/orderhistory" &&
+                            " text-primary-500 border-primary-500 bg-primary-50")
+                        }
                       >
-                        <FaTruck /> Lịch sử đặt hàng
+                        <FaTruck /> <div className=" ">Lịch sử đặt hàng</div>
                       </Link>
-                      <Link
-                        to={"/user/voucher"}
-                        className="flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500 border-transparent hover:bg-primary-50"
+                      {/* <Link
+                        to={"/account/voucher"}
+                        className={
+                          "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500  hover:bg-primary-50" +
+                          (pathUrl == "/account/voucher" &&
+                            " text-primary-500 border-primary-500 bg-primary-50")
+                        }
                       >
                         <FaGift /> Ưu đãi
-                      </Link>
+                      </Link> */}
                       <Link
-                        to={"/user/sercurity"}
-                        className="flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500 border-transparent hover:bg-primary-50"
+                      title="Bảo mật"
+                        to={"/account/sercurity"}
+                        className={
+                          "flex items-center gap-3 px-3 py-2 font-bold text-gray-500 hover:text-primary-500 border-l-2 hover:border-primary-500  hover:bg-primary-50" +
+                          (pathUrl == "/account/sercurity" &&
+                            " text-primary-500 border-primary-500 bg-primary-50")
+                        }
                       >
-                        <FaLock /> Bảo mật
+                        <FaLock /> <div className=" ">Bảo mật</div>
                       </Link>
                     </>
                   )}
@@ -129,7 +169,7 @@ function ProfileLayout() {
             )}
           </div>
           <div className="flex-1 border-l border-r border-b shadow-sm bg-white p-5">
-            <Outlet />
+            {isLoading ?<DefaultSke/>:<Outlet />}
           </div>
         </div>
       </div>

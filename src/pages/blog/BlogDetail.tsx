@@ -15,6 +15,7 @@ import { FormMartDateAgo } from "../../components/functions/tool";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import SaveShare from "../../components/items/SaveShare";
+import ModalComment from "../../components/compoment/ModalComment";
 
 function BlogDetail() {
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
@@ -64,15 +65,15 @@ function BlogDetail() {
       }
     }
   };
-
+const [isOpenComment,setIsOpenComment] = useState(false)
   return (
-    <div className="w-content m-auto py-8 flex gap-16">
+    <div className="w-full px-5 xl:px-0 xl:w-content m-auto py-8 flex flex-col-reverse md:flex-row  gap-16">
       {loading ? (
         <div className="w-20">
           <DefaultSke />
         </div>
       ) : (
-        <div className="w-20">
+        <div className=" md:w-20">
           <div className="border-b py-2">
             <Link
               to={"/account/@" + blog?.user.username}
@@ -93,9 +94,11 @@ function BlogDetail() {
               <FaHeart className=" text-xl" />
               <div>{loveCount}</div>
             </div>
-            <div className="flex gap-2 items-center hover:text-gray-600 cursor-pointer">
+            {/* ModalComment({ isOpenComment, setIsOpenComment, step }: props) */}
+            {isOpenComment &&blog && <ModalComment  isOpenComment={isOpenComment} setIsOpenComment={setIsOpenComment} step={blog} type='blog'/>}
+            <div onClick={()=>setIsOpenComment(true)} className="flex gap-2 items-center hover:text-gray-600 cursor-pointer">
               <IoChatbubbles className=" text-xl" />
-              <div>0</div>
+              <div>{blog?.comment_count}</div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import { SlLogout } from "react-icons/sl";
 // import { BiCategory } from "react-icons/bi";
 import { IoSearchOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo/logo-new.png";
 import { CiUser } from "react-icons/ci";
 import CateHeader from "../../compoment/CateHeader";
@@ -12,6 +12,8 @@ import { RootState } from "../../../redux/reducers";
 import { useDispatch, useSelector } from "react-redux";
 import { FaArrowRightLong } from "react-icons/fa6";
 import i_avatar from "../../../assets/icons/avatar.png";
+import { AiOutlineMenu } from "react-icons/ai";
+
 import {
   Menu,
   MenuHandler,
@@ -19,52 +21,77 @@ import {
   MenuList,
 } from "@material-tailwind/react";
 import { clearCart } from "../../../redux/reducers/appReducer";
+import ModalSideBar from "../../compoment/ModalSideBar";
+import { FormEvent, useState } from "react";
 function Header() {
   const auth = useSelector((state: RootState) => state.authReducer);
   const { cart } = useSelector((state: RootState) => state.appReducer);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     localStorage.removeItem("USER_TOKEN");
     localStorage.removeItem("CURRENT_USER");
     localStorage.removeItem("IS_LOGIN");
-    dispatch(clearCart())
+    dispatch(clearCart());
     window.location.reload();
+  };
+  const [isOpenSidebar, setIsOpenSidebar] = useState(false);
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const handleSubmitSearch = (e: FormEvent) => {
+    e.preventDefault();
+    navigate(`/search?q=${search}`);
   };
   return (
     <div>
       <div className="bg-primary-500 text-white">
-        <div className="w-content mx-auto flex justify-between py-2 text-[14px]">
+        <div className="xl:w-content w-full px-5 xl:px-0 mx-auto flex justify-between py-2 text-[14px]">
           <Link to={"#"} className="flex gap-2 items-center">
             <TbWorldCode className="text-lg" />
             <span>Ngôn ngữ</span>
           </Link>
-          <Link to={"#"} className="flex gap-2 items-center">
+          <a
+            href="https://teacher.mr-quynh.com"
+            target="__blank"
+            className="flex gap-2 items-center"
+          >
             <FaUserPlus className="text-lg" />
             <span>Trở thành giảng viên</span>
-          </Link>
+          </a>
         </div>
       </div>
       <div className=" bg-gray-100 shadow-sm">
-        <div className="w-content m-auto flex justify-between items-center gap-8 ">
+        <div className="xl:w-content w-full xl:px-0 px-5 m-auto flex justify-between items-center gap-8 ">
           <div className="flex items-center py-3 gap-5">
             <Link to={"/"} className="w-[91px]">
               <img className="w-full h-full" src={logo} alt="" />
             </Link>
-            <CateHeader />
-          </div>
-          <div className=" border rounded-lg flex px-2 py-1 flex-1 items-center bg-white">
-            <input
-              type="text"
-              placeholder="Tìm kiếm"
-              className="flex-1 px-2 py-1"
-            />
-            <div>
-              <IoSearchOutline className="text-[20px] text-primary-900" />
+            <div className=" hidden md:block">
+              <CateHeader />
             </div>
           </div>
+          <form
+            onSubmit={handleSubmitSearch}
+            className=" border rounded-lg  px-2 py-1 flex-1 hidden xl:flex  items-center bg-white "
+          >
+            <input
+              type="text"
+              name="search"
+              placeholder="Tìm kiếm"
+              className="flex-1 px-2 py-1"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button type="submit">
+              <IoSearchOutline className="text-[20px] text-primary-900" />
+            </button>
+          </form>
           <div className="flex gap-4">
-            <div className="flex gap-3">
+            <div className="flex items-center gap-2 cursor-pointer text-primary-900 hover:text-primary-500 xl:hidden">
+              <IoSearchOutline className="text-[20px] text-primary-900 hover:text-primary-500" />
+              <div>Tìm kiếm</div>
+            </div>
+            <div className=" gap-3 hidden lg:flex">
               <Link
                 to={"#"}
                 className="flex gap-1 items-center text-primary-900 hover:text-primary-500"
@@ -81,16 +108,28 @@ function Header() {
                 <div className=" relative">
                   <MdOutlineShoppingCart className="text-[20px]" />
                   {cart && cart.length > 0 && (
-                    <span className=" top-[-13px] right-[-8px] absolute bg-red-500 w-[20px] h-[20px] flex justify-center items-center rounded-full text-white text-sm">{cart.length}</span>
+                    <span className=" top-[-13px] right-[-8px] absolute bg-red-500 w-[20px] h-[20px] flex justify-center items-center rounded-full text-white text-sm">
+                      {cart.length}
+                    </span>
                   )}
                 </div>
                 <span>Giỏ hàng</span>
               </Link>
             </div>
+            <div
+              onClick={() => setIsOpenSidebar(!isOpenSidebar)}
+              className="flex items-center text-3xl hover:text-primary-500 cursor-pointer lg:hidden"
+            >
+              <AiOutlineMenu />
+            </div>
+            <ModalSideBar
+              isOpenSidebar={isOpenSidebar}
+              setIsOpenSidebar={setIsOpenSidebar}
+            />
             {auth.isLogin ? (
-              <div className="flex gap-4">
+              <div className=" hidden gap-4 md:flex">
                 <Link
-                  to={"/account/@"+auth.user.username+"/courses"}
+                  to={"/account/@" + auth.user.username + "/courses"}
                   className="flex gap-1 items-center  hover:text-primary-500 py-1 px-3 border border-primary-500 rounded-lg text-primary-500 hover:bg-primary-50"
                 >
                   <FaArrowRightLong />
@@ -132,37 +171,37 @@ function Header() {
                         </div>
                       </Link>
                     </MenuItem>
-                    <MenuItem className="border-t border-b mt-2">
+                    <MenuItem className="border-t border-b mt-2 p-0">
                       <Link
                         to={"/account/@" + auth.user.username}
-                        className="w-full"
+                        className="w-full  block p-2"
                       >
                         Trang cá nhân
                       </Link>
                     </MenuItem>
-                    <MenuItem className="w-full">
-                      <Link className="" to={"/blog/create"}>
+                    <MenuItem className="w-full p-0">
+                      <Link className=" block p-2" to={"/blog/create"}>
                         Viết blog
                       </Link>
                     </MenuItem>
-                    <MenuItem className="w-full">
-                      <Link className="" to={"/me/my-blogs"}>
+                    <MenuItem className="w-full p-0">
+                      <Link className="block p-2" to={"/me/my-blogs"}>
                         Bài viết của tôi
                       </Link>
                     </MenuItem>
-                    <MenuItem className="w-full">
-                      <Link className="" to={"/me/bookmark"}>
+                    <MenuItem className="w-full p-0">
+                      <Link className="block p-2" to={"/me/bookmark"}>
                         Bài viết đã lưu
                       </Link>
                     </MenuItem>
-                    <MenuItem className="w-full">
-                      <Link className="" to={"/settings"}>
+                    <MenuItem className="w-full p-0">
+                      <Link className="block p-2" to={"/settings"}>
                         Cài đặt
                       </Link>
                     </MenuItem>
-                    <MenuItem className="border-t w-full">
+                    <MenuItem className="border-t w-full p-0">
                       <div
-                        className="flex font-bold gap-2 items-center"
+                        className="flex font-bold gap-2 items-center  p-2"
                         onClick={handleLogout}
                       >
                         <SlLogout /> Đăng xuất
@@ -172,7 +211,7 @@ function Header() {
                 </Menu>
               </div>
             ) : (
-              <div className="flex gap-3">
+              <div className="md:flex hidden gap-3">
                 <Link
                   to={"/register"}
                   className="flex gap-1 items-center text-primary-900 hover:text-primary-500 py-1 px-3"

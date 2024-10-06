@@ -146,15 +146,15 @@ function Checkout() {
     );
   } else {
     return (
-      <div className="w-content m-auto py-8">
+      <div className="xl:w-content w-full px-5 xl:px-0 m-auto py-8">
         <div
           className={
-            "border p-5 w-full shadow-sm rounded-xl flex bg-gray-50 " +
+            "border p-5 w-full shadow-sm rounded-xl flex flex-col md:flex-row bg-gray-50 " +
             (isTimeout && !isCheckoutSuccess && "border-red-500 bg-red-50 ") +
             (isCheckoutSuccess && " border-green-500 bg-green-50")
           }
         >
-          <div className="w-30 border-r pr-5 flex flex-col relative">
+          <div className="w-full md:w-30 border-r md:pr-5 pr-0 mb-5 md:mb-0 flex flex-col relative">
             <div className=" absolute">
               {!isTimeout && (
                 <div className="flex gap-2 ">
@@ -239,8 +239,8 @@ function Checkout() {
               </div>
             </div>
           ) : (
-            <div className="flex-1 pl-5">
-              <div className="flex gap-5 items-center">
+            <div className="flex-1 md:pl-5 ">
+              <div className="flex flex-col md:flex-row gap-5 items-center">
                 {typeBank == "momo" && bankInfo && (
                   <div className="w-[342px]  border bg-white object-cover shadow-lg">
                     <img
@@ -300,7 +300,7 @@ function Checkout() {
                   <div className="font-bold text-primary-700">
                     Chuyển khoản thủ công
                   </div>
-                  <div className="py-2 grid grid-cols-2 gap-4">
+                  <div className="py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-3 border rounded-xl bg-white shadow-md">
                       <div className="font-bold text-sm">Số tài khoản</div>
                       <div className="mt-4 flex justify-between items-center">

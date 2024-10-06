@@ -20,12 +20,14 @@ import {
   MSection,
   MTeacher,
   MTeacherDashboard,
+  MyReview,
 } from "../types/app";
 import {
   SAddCart,
   SEnrollCourse,
   SGetCourseCollection,
   SGetCourseSlug,
+  SSendReviewCourse,
 } from "../services/CommonService";
 import { formatDuration, FormatPrice } from "../components/functions/tool";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,6 +50,10 @@ function Detail() {
   const [courseSameAuthor, setCourseSameAuthor] = useState<MCourse[]>([]);
   const [teacherDashboard, setTeacherDashboard] = useState<MTeacherDashboard>();
   const [isLoading, setIsLoading] = useState(false);
+  const [myRview, setMyReview] = useState<MyReview | null>(null);
+  const [levelStar, setLevelStar] = useState(0);
+  const [reviewCmt, setReviewCmt] = useState("");
+  const [isLoadingReview, setIsLoadingReview] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -65,6 +71,11 @@ function Detail() {
           setReviews(res.data.course.reviews);
           setIntends(res.data.course.intends);
           setTeacherDashboard(res.data.teacher_dashboard);
+          setMyReview(res.data.my_review);
+          if (res.data.my_review.review) {
+            setLevelStar(res.data.my_review.review.rating);
+            setReviewCmt(res.data.my_review.review.content);
+          }
           // get course same author
           SGetCourseCollection(
             `?limit=8&sort=latest&teacher_id=${res?.data?.course?.user?.id}`
@@ -167,10 +178,39 @@ function Detail() {
       }
     }
   };
+  const handleSubmitReview = () => {
+    if (levelStar == 0 || reviewCmt == "") {
+      alert("Vui lòng đánh giá sao!");
+      return;
+    }
+    if (reviewCmt == "") {
+      alert("Vui lòng điền đầy đủ thông tin đánh giá!");
+      return;
+    }
+    setIsLoadingReview(true);
+    if (course) {
+      SSendReviewCourse(course?.id, reviewCmt, levelStar).then((res) => {
+        setIsLoadingReview(false);
+        if (res.status && myRview) {
+          if (myRview.review == null) {
+            setReviews([res.data, ...reviews]);
+          } else {
+            const updateReview= reviews.map((item) => {
+              if (item.id == res.data.id) {
+                item = { ...res.data };
+              }
+              return item;
+            });
+            setReviews(updateReview);
+          }
+        }
+      });
+    }
+  };
   return isLoading ? (
-    <div className="w-content m-auto">
-        <DefaultSke/>
-        <DefaultSke/>
+    <div className="w-full px-5 xl:w-content m-auto">
+      <DefaultSke />
+      <DefaultSke />
     </div>
   ) : (
     <div className="flex flex-col gap-[72px] pb-[32px] ">
@@ -183,8 +223,8 @@ function Detail() {
         />
       )}
       <div className="bg-primary-900 w-full text-white">
-        <div className="w-content m-auto py-16 flex">
-          <div className="w-60">
+        <div className="w-full px-5 xl:w-content m-auto py-16 flex md:flex-row flex-col">
+          <div className="w-full pb-5 md:pb-0 md:w-60">
             <div className="flex items-center gap-2 text-gray-300">
               {categories &&
                 categories.length > 0 &&
@@ -319,11 +359,11 @@ function Detail() {
         </div>
       </div>
       {/* giang vien */}
-      <div className="w-content m-auto">
+      <div className="w-full px-5 xl:w-content m-auto">
         <div className="font-bold text-3xl mb-4">Thông tin giảng viên</div>
-        <div className="flex gap-8">
-          <div className="w-fit">
-            <div className="w-[420px] h-[274px] border rounded-xl">
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="md:w-fit w-full">
+            <div className="md:w-[420px] w-full h-[274px] border rounded-xl">
               <img
                 className="w-full h-full rounded-xl object-cover"
                 src={
@@ -383,7 +423,7 @@ function Detail() {
       </div>
       {/* content */}
       <div className="bg-white">
-        <div className="w-content m-auto">
+        <div className="w-full px-5 xl:w-content m-auto">
           <div className="font-bold text-3xl mb-4">Nội dung khóa học</div>
           <div className="flex gap-2 items-center">
             <span>{sections.length} phần</span>
@@ -394,8 +434,8 @@ function Detail() {
               {formatDuration(course?.duration ? +course?.duration : 0)}
             </span>
           </div>
-          <div className="py-5 flex gap-5">
-            <div className="w-65">
+          <div className="py-5 flex flex-col md:flex-row gap-5">
+            <div className="w-full md:w-65">
               <div className="border border-gray-300">
                 {sections &&
                   sections.length > 0 &&
@@ -495,12 +535,12 @@ function Detail() {
         </div>
       </div>
       {/* décription */}
-      <div className="w-content m-auto">
+      <div className="w-full px-5 xl:w-content m-auto">
         <div className="font-bold text-3xl mb-4">Mô tả khóa học</div>
 
-        <div className="my-5 flex gap-4 ">
+        <div className="my-5 flex flex-col md:flex-row gap-4 ">
           <div
-            className="w-65 border rounded-lg shadow-sm p-5 h-fit max-h-[360px] overflow-hidden relative"
+            className="w-full md:w-65 border rounded-lg shadow-sm p-5 h-fit max-h-[360px] overflow-hidden relative"
             dangerouslySetInnerHTML={{ __html: course?.description ?? "" }}
           >
             {/* <div>
@@ -536,42 +576,62 @@ function Detail() {
       </div>
       {/* review */}
 
-      <div className="w-content m-auto">
+      <div className="w-full px-5 xl:w-content m-auto">
         <div className="font-bold text-3xl mb-4">Xếp hạng khóa học</div>
-        <div className="bg-gray-50 p-4 rounded-lg flex gap-8">
-          <div className="flex flex-col gap-5 text-center w-fit py-2">
-            <div className="text-2xl font-bold text-gray-400  gap-2 text-center flex justify-center">
-              <span className="text-orange-500">
-                {course?.rating
-                  ? course?.rating % course?.rating > 0
-                    ? course?.rating
-                    : course?.rating + ".0"
-                  : "0.0"}
-              </span>
-              /<span>5,0</span>
+        {myRview && (
+          <div className="bg-gray-50 p-4 rounded-lg flex flex-col md:flex-row  gap-8">
+            <div className="flex flex-col items-center   gap-5 text-center w-full md:w-fit py-2">
+              <div className="text-2xl font-bold text-gray-400  gap-2 text-center flex justify-center">
+                <span className="text-orange-500">
+                  {course?.rating
+                    ? course?.rating % course?.rating > 0
+                      ? course?.rating
+                      : course?.rating + ".0"
+                    : "0.0"}
+                </span>
+                /<span>5,0</span>
+              </div>
+              <div className="flex text-gray-300 gap-2 text-2xl">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <FaStar
+                    onClick={() => setLevelStar(index + 1)}
+                    className={
+                      " cursor-pointer " +
+                      (index < levelStar ? "text-orange-500" : "")
+                    }
+                    key={index}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="flex text-gray-300 gap-2 text-2xl">
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStar />
+            <div className="flex-1 relative">
+              <textarea
+                className="w-full p-3 h-full border rounded-lg"
+                name=""
+                id=""
+                value={reviewCmt}
+                onChange={(e) => setReviewCmt(e.target.value)}
+                placeholder="Đánh giá khóa học"
+              ></textarea>
+              {myRview.is_log &&
+                myRview.can_review &&
+                (isLoadingReview ? (
+                  <button className=" absolute top-[10px] right-[10px] bg-primary-300 cursor-not-allowed text-white rounded-lg px-4 py-1 ">
+                    Gửi đánh giá
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmitReview}
+                    className=" absolute top-[10px] right-[10px] bg-primary-500 text-white rounded-lg px-4 py-1 hover:bg-primary-600"
+                  >
+                    Gửi đánh giá
+                  </button>
+                ))}
             </div>
           </div>
-          <div className="flex-1 relative">
-            <textarea
-              className="w-full p-3 h-full border rounded-lg"
-              name=""
-              id=""
-              placeholder="Đánh giá khóa học"
-            ></textarea>
-            <button className=" absolute top-[10px] right-[10px] bg-primary-500 text-white rounded-lg px-4 py-1 hover:bg-primary-600">
-              Gửi đánh giá
-            </button>
-          </div>
-        </div>
+        )}
         <div className="py-5">
-          <div className=" grid grid-cols-2 gap-5">
+          <div className=" grid grid-cols-1 md:grid-cols-2 gap-5">
             {reviews && reviews.length > 0 ? (
               reviews.map((item) => {
                 return <ReviewItem key={item.id} review={item} />;
@@ -580,10 +640,10 @@ function Detail() {
               <div> Chưa có đánh giá nào về khóa học này!</div>
             )}
           </div>
-          {course && course?.rating - 4 > 0 && (
+          {reviews && (+reviews.length  > 4) && (
             <div className="mt-5">
               <button className="border px-5 py-2 rounded-lg font-bold shadow-sm text-gray-700 hover:bg-gray-100">
-                Hiện tất cả ({course.rating - 4}) đánh giá
+                Hiện tất cả ({reviews.length - 4}) đánh giá
               </button>
             </div>
           )}
@@ -591,16 +651,16 @@ function Detail() {
       </div>
 
       {/* kh cua tac gia */}
-      <section className="w-content m-auto mb-8">
+      <section className="w-full px-5 xl:w-content m-auto mb-8">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Khóa học của Mr Quynh</div>
+            <div className="font-bold text-2xl md:text-3xl">Khóa học của Mr Quynh</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
           {courseSameAuthor && courseSameAuthor.length > 0 ? (
             courseSameAuthor.map((item) => {
               return <ProductItem key={item.id} course={item} />;

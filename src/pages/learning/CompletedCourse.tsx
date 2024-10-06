@@ -30,13 +30,13 @@ function CompletedCourse() {
     }
   }, [slug]);
   return (
-    <div className="w-content m-auto">
+    <div className="w-full px-5 xl:px-0 xl:w-content m-auto">
       {loading ? (
         <CertificateSke />
       ) : (
-        <div className="w-content m-auto">
+        <div className=" m-auto">
           <div className="font-bold text-3xl pt-8">Nhận chứng chỉ</div>
-          <div className="mb-8 flex gap-2 items-center">
+          <div className="mb-8 flex flex-col md:flex-row gap-2  md:items-center">
             Quin Course ghi nhận sự lỗ lực của bạn! Bằng cách nhận chứng chỉ
             này, bạn chính thức hoàn thành khóa học
             <Link

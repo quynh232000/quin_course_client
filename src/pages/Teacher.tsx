@@ -30,6 +30,7 @@ import {
   MTeacher,
   MTeacherDashboard,
 } from "../types/app";
+import DefaultSke from "../components/skeleton/DefaultSke";
 function Teacher() {
   const { username } = useParams();
   const naviate = useNavigate();
@@ -39,12 +40,14 @@ function Teacher() {
   const [teacherDashboard, setTeacherDashboard] = useState<MTeacherDashboard>();
   const [courses, setCourses] = useState<MCourse[]>();
   const [blogs, setBlogs] = useState<MBlog[]>();
-
+const [loading,setLoading] = useState(false)
   useEffect(() => {
+    setLoading(true)
     if (!username) {
       naviate("/error");
     } else {
       SGetTeacherInfo(username.split("@")[1]).then((res) => {
+        setLoading(false)
         if (res.status) {
           setTeacher(res.data);
           setSocials(res.data.socials);
@@ -69,16 +72,22 @@ function Teacher() {
       });
     }
   }, [username]);
+  if(loading){
+    return <div className="pb-[32px]">
+      <DefaultSke/>
+      <DefaultSke/>
+    </div>
+  }
   return (
     <div className="flex flex-col gap-[72px] pb-[32px] ">
       <div
         className={` text-white bg-[url('${i_banner_teacher}')] bg-contain bg-center  `}
       >
         <div
-          className={`w-content m-auto py-16 flex gap-5 pl-5`}
+          className={` w-full px-5 xl:w-content m-auto py-16 flex flex-col md:flex-row gap-5 pl-5`}
           style={{ background: `url(${i_banner_teacher})` }}
         >
-          <div className="w-[308px] h-[207px] rounded-xl shadow-sm border border-gray-700 ">
+          <div className="md:w-[308px] w-full h-[207px] rounded-xl shadow-sm border border-gray-700 ">
             <img
               className="w-full h-full rounded-lg object-cover"
               src={
@@ -88,7 +97,7 @@ function Teacher() {
               alt={teacher?.username}
             />
           </div>
-          <div className="flex flex-col gap-2 justify-center">
+          <div className="flex flex-col items-center md:items-start gap-2 justify-center">
             <h4 className="font-bold text-3xl">
               {teacher?.first_name + " " + teacher?.last_name}{" "}
             </h4>
@@ -132,7 +141,7 @@ function Teacher() {
       </div>
 
       {/* banner */}
-      <div className="w-content m-auto grid grid-cols-4 gap-4">
+      <div className=" w-full px-5 xl:w-content m-auto grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div className="border shadow-sm rounded-xl p-3 flex justify-between">
           <div className="w-[78px] h-[78px] rounded-full bg-primary-50 flex items-center p-4 justify-center">
             <img
@@ -194,13 +203,13 @@ function Teacher() {
       </div>
       {/* teacher info */}
       <div className="bg-white">
-        <div className="w-content m-auto">
+        <div className=" w-full px-5 xl:w-content m-auto">
           <div className="font-bold text-3xl mb-4">Giới thiệu giảng viên</div>
           <div className="flex gap-8">
             <div className="flex-1">
               {teacher?.teacher_info.description ?? "Đang cập nhật..."}
             </div>
-            <div className="w-40">
+            <div className="w-40 hidden md:block">
               <div className="border-2 border-gray-500 bg-primary-100 rounded-lg overflow-hidden p-1">
                 {teacher?.thumbnail_url ? (
                   <img width={560} src={teacher?.thumbnail_url} alt="" />
@@ -220,7 +229,7 @@ function Teacher() {
         </div>
       </div>
       {/* khoa hoc */}
-      <section className="w-content m-auto mb-8">
+      <section className=" w-full px-5 xl:w-content m-auto mb-8">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
             <div className="font-bold text-3xl">Khóa học của tác giả</div>
@@ -229,7 +238,7 @@ function Teacher() {
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
           {courses && courses.length > 0 ? (
             courses.map((item) => {
               return <ProductItem key={item.id} course={item} />;
@@ -242,7 +251,7 @@ function Teacher() {
         </div>
       </section>
       {/* bang tin */}
-      <section className="w-content m-auto">
+      <section className=" w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
             <div className="font-bold text-3xl">Bảng tin của tác giả</div>
@@ -252,7 +261,7 @@ function Teacher() {
           </button>
         </div>
         {blogs && blogs.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5">
             {blogs.map((item) => {
               return <NewsItem key={item.id} blog={item} />;
             })}
@@ -264,7 +273,7 @@ function Teacher() {
         )}
       </section>
       {/* danh gia tac gia */}
-      <div className="w-content m-auto">
+      <div className=" w-full px-5 xl:w-content m-auto hidden">
         <div className="font-bold text-3xl mb-4">
           Xếp hạng của giảng viên Mr Quynh
         </div>

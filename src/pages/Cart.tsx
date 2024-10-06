@@ -68,11 +68,11 @@ function Cart() {
   };
   return (
     <div className="flex flex-col gap-[72px] pt-[32px] mb-16">
-      <div className="w-content m-auto ">
+      <div className="w-full px-5 xl:w-content m-auto ">
         <div className="font-bold text-3xl mb-4">
           Giỏ hàng của bạn ({cart.length})
         </div>
-        <div className="flex gap-5">
+        <div className="flex flex-col md:flex-row gap-5">
           <div className="flex-1 ">
             <div className="flex flex-col gap-5">
               {cart && cart.length > 0 ? (
@@ -146,7 +146,7 @@ function Cart() {
               )}
             </div>
           </div>
-          <div className="w-30 px-2 flex flex-col gap-3">
+          <div className="w-full md:w-30 px-2 flex flex-col gap-3">
             <div>
               <div className="font-bold text-lg">
                 Chọn phương thức thanh toán

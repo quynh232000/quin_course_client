@@ -174,4 +174,28 @@ export const setThumnailUser = async (media_uuid: string, index: number) => {
     console.log(error);
   }
 };
+export const sLoginWithGoogle = async (token: string) => {
+  try {
+    const res = await request.POST(`auth/withgoogle`, {id_token:token});
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SForgotPassword = async (email: string) => {
+  try {
+    const res = await request.POST(`auth/forgotpassword`, {email});
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SChangeNewPassword = async (password: string,token:string) => {
+  try {
+    const res = await request.POST(`auth/changenewpassword`, {password,token});
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
 

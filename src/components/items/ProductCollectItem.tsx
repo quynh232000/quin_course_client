@@ -158,7 +158,7 @@ function ProductCollectItem({ course, type }: props) {
     }
   };
   return (
-    <div className=" p-5 border-b w-full  flex h-fit">
+    <div className=" p-5 border-b w-full  flex md:flex-row flex-col h-fit">
       {enrollErorr && <ToastMessage type="error" message={enrollErorr} />}
       {toastCart.status && (
         <ToastMessage
@@ -167,7 +167,7 @@ function ProductCollectItem({ course, type }: props) {
           message={toastCart.message}
         />
       )}
-      <div className="h-[205px] w-[319px] overflow-hidden rounded-t-lg relative">
+      <div className="h-[205px] w-full mb-3 md:mb-0 md:w-[319px] overflow-hidden rounded-t-lg relative">
         {course.percent_sale > 0 && (
           <span className=" absolute top-0 bg-orange-400 text-white py-0 px-5 rounded-br-xl">
             {course.percent_sale}%
@@ -260,7 +260,7 @@ function ProductCollectItem({ course, type }: props) {
         {!type && (
           <div className="flex-1 flex items-end ">
             {course.price > 0 ? (
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full">
                 <div onClick={() => handleCart("addcart")}>
                   <button
                     className={
@@ -276,7 +276,7 @@ function ProductCollectItem({ course, type }: props) {
                 <button
                   disabled={btnAddCart.buynow}
                   onClick={() => handleCart("buynow")}
-                  className="bg-primary-500 cursor-pointer text-center flex items-center justify-center px-16 text-white hover:bg-primary-600 flex-1 rounded-lg"
+                  className="bg-primary-500 cursor-pointer text-center flex  items-center justify-center px-16 text-white hover:bg-primary-600 md:flex-none flex-1 w-fit rounded-lg"
                 >
                   Mua ngay
                 </button>
@@ -324,7 +324,7 @@ function ProductCollectItem({ course, type }: props) {
               </div>
             ) : (
               <div onClick={handleEnroll} className=" flex-1 flex items-end">
-                <button className="bg-deep-orange-500 w-fit px-16 rounded-lg text-white py-2 hover:bg-deep-orange-600 shadow-sm hover:shadow-none">
+                <button className="bg-deep-orange-500  px-16 w-full md:w-fit rounded-lg text-white py-2 hover:bg-deep-orange-600 shadow-sm hover:shadow-none">
                   Tham gia khóa học
                 </button>
               </div>

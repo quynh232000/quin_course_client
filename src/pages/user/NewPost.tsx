@@ -51,7 +51,7 @@ function NewPost() {
       SGetBlogById(id).then((res) => {
         if (res.status) {
           // asd
-          console.log(res.data);
+          document.title =res.data.title
           setTittle(res.data.title);
           setSubTittle(res.data.subtitle);
           setImagePreview(res.data.thumbnail_url);
@@ -203,7 +203,7 @@ function NewPost() {
     }
   };
   return (
-    <div className="w-content m-auto py-8">
+    <div className="w-full px-5 xl:px-0 xl:w-content m-auto py-8">
       {showToast && (
         <ToastMessage
           title={messageToast.title}
@@ -233,7 +233,7 @@ function NewPost() {
           )}
         </div>
       </div>
-      <div className="mb-5 flex">
+      <div className="mb-5 flex flex-col md:flex-row gap-5 md:gap-0">
         <div className="flex-1 border">
           <div className="pt-3">
             <input
@@ -283,7 +283,7 @@ function NewPost() {
             </div>
           </div>
         </div>
-        <div className="w-40 border-l pl-5">
+        <div className="md:w-40 border-l md:pl-5">
           <label
             htmlFor="image"
             className="h-[260px] border rounded-lg shadow-lg block"

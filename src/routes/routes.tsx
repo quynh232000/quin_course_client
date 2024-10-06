@@ -5,6 +5,7 @@ import StudyLayout from "../layouts/StudyLayout";
 import BlogDetail from "../pages/blog/BlogDetail";
 import BlogTag from "../pages/blog/BlogTag";
 import Cart from "../pages/Cart";
+import ChangeNewPassword from "../pages/ChangeNewPassword";
 import Checkout from "../pages/Checkout";
 import CheckoutError from "../pages/CheckoutError";
 import CheckoutSuccess from "../pages/CheckoutSuccess";
@@ -38,6 +39,10 @@ const publicRoutes = [
         component: Collection,
       },
       {
+        path: "/search",
+        component: Collection,
+      },
+      {
         path: "/course/:slug",
         component: Detail,
       },
@@ -60,6 +65,10 @@ const publicRoutes = [
       {
         path: "/forgot-password",
         component: ForgotPassword,
+      },
+      {
+        path: "/forgot-password/:token",
+        component: ChangeNewPassword,
       },
       {
         path: "/blogs",
@@ -111,11 +120,11 @@ const privateRoutes = [
         component: MyCourse,
       },
       {
-        path: "/user/orderhistory",
+        path: "/account/orderhistory",
         component: OrderHistory,
       },
       {
-        path: "/user/sercurity",
+        path: "/account/sercurity",
         component: ChangePassword,
       },
       

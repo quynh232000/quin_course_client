@@ -1,6 +1,7 @@
 import { FaStar } from "react-icons/fa";
 import { MReview } from "../../types/app";
 import { Link } from "react-router-dom";
+import { FormMartDateAgo } from "../functions/tool";
 
 type props={
   review:MReview
@@ -29,7 +30,7 @@ function ReviewItem({review}:props) {
 
             ))}
             </div>
-            <div className="text-sm text-gray-500">12/08/2024</div>
+            <div className="text-sm text-gray-500">{FormMartDateAgo(review.updated_at)}</div>
           </div>
         </div>
       </div>

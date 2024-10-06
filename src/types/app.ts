@@ -289,3 +289,56 @@ export interface MNote {
   step: MStep
   updated_at:Date
 }
+export interface MComment {
+  id: number
+  comment: string
+  type: string
+  user_id: number
+  commentable_id: string
+  is_approved: number
+  is_deleted: number
+  is_answered: number
+  created_at: string
+  updated_at: string
+  reaction_count: number
+  replies_count: number
+  commentor: MUser
+  is_reaction:boolean,
+  type_reaction:MReaction
+  all_reaction_type:{type:string}[]
+}
+export interface MReaction {
+  id: number
+  user_id: number
+  commentable_id: string
+  commentable_type: string
+  type: string
+}
+export interface MOrder {
+  id: number
+  user_id: number
+  email: string
+  subtotal: number
+  total: number
+  status: string
+  voucher_id: number
+  payment_method: string
+  order_code: string
+  created_at: string
+  updated_at: string
+  order_details: MOrderDetail[]
+}
+export interface MOrderDetail {
+  id: number
+  order_id: number
+  course_id: number
+  price: number
+  created_at: string
+  updated_at: string
+  course: MCourse
+}
+export interface MyReview{
+  is_log: boolean
+  can_review: boolean;
+  review:MReview
+}

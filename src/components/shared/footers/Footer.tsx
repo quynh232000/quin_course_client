@@ -5,8 +5,8 @@ import { MdOutlineAttachEmail } from "react-icons/md";
 function Footer() {
   return (
     <div className="w-full bg-gray-50">
-      <div className="w-content m-auto">
-        <div className="w-full grid grid-cols-4 gap-4 py-5">
+      <div className="w-full px-5 xl:w-content m-auto">
+        <div className="w-full grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-5">
           <div>
             <div className="w-[158px]">
               <img src={logo} alt="" className="w-full h-full" />

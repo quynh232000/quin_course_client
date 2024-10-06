@@ -29,7 +29,7 @@ function BlogSiderBar() {
     );
   }
   return (
-    <div className="w-30 my-5">
+    <div className="w-full md:w-30 my-5">
       <div className="font-bold text-gray-500">CHỦ ĐỀ NỔI BẬT KHÁC</div>
       <div className="mt-4 flex flex-wrap gap-3">
         {tags.length > 0 &&

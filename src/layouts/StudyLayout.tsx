@@ -1,4 +1,9 @@
-import { FaAnglesLeft, FaArrowRightLong, FaCircleCheck, FaRegCircleQuestion } from "react-icons/fa6";
+import {
+  FaAnglesLeft,
+  FaArrowRightLong,
+  FaCircleCheck,
+  FaRegCircleQuestion,
+} from "react-icons/fa6";
 import i_logo from "../assets/logo/logo-new.png";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import ProgressCircle from "../components/compoment/ProgressCircle";
@@ -55,7 +60,9 @@ function Icon({ id = 1, open = 1 }) {
 function StudyLayout() {
   const dispatch = useDispatch();
   const { studyLog } = useSelector((state: RootState) => state.appReducer);
-  const { user } = useSelector((state: RootState) => state.authReducer);
+  const { user, isLogin } = useSelector(
+    (state: RootState) => state.authReducer
+  );
 
   const [open, setOpen] = useState(0);
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
@@ -77,8 +84,10 @@ function StudyLayout() {
   const [timeWaiting, setTimeWaiting] = useState<string>("");
 
   useEffect(() => {
-    if (!slug) {
-      navigate("/notfound");
+    if (!isLogin) {
+      navigate("/login");
+    } else if (!slug) {
+      navigate("/error");
     } else {
       SGetLearningCourse(slug).then((res) => {
         if (res.status) {
@@ -92,7 +101,7 @@ function StudyLayout() {
           setUserProgress(JSON.parse(res.data.user_progress));
           document.title = res.data.course.title;
         } else {
-          navigate("/notfound");
+          navigate("/error");
         }
       });
     }
@@ -120,6 +129,7 @@ function StudyLayout() {
       navigate("?id=" + step.uuid);
     }
   };
+console.log(learningLog);
 
   return (
     <div className="w-full flex flex-col">
@@ -127,7 +137,7 @@ function StudyLayout() {
       <div className="bg-primary-50 flex border-b shadow-sm  justify-between items-center">
         <div className="flex items-center gap-2">
           <div
-            onClick={()=>navigate('/account/@'+user.username+'/courses')}
+            onClick={() => navigate("/account/@" + user.username + "/courses")}
             className="px-8 text-primary-700 py-5 hover:bg-primary-100 cursor-pointer"
           >
             <FaAnglesLeft />
@@ -136,7 +146,7 @@ function StudyLayout() {
             <Link to={"/"}>
               <img className="w-[52px]" src={i_logo} alt="" />
             </Link>
-            <div className="font-bold text-primary-800 text-lg">
+            <div className="font-bold text-primary-800 text-lg line-clamp-1">
               {courseInfo?.title}
             </div>
           </div>
@@ -146,21 +156,33 @@ function StudyLayout() {
             <ProgressCircle
               progress={Math.ceil(courseInfo?.percent_learning ?? 0)}
             />
-            <span className="text-gray-700 ">
+            <span className="text-gray-700 hidden md:block">
               {userProgress?.length ?? 0}/{courseInfo?.total_steps} bài học
             </span>
           </div>
-          {!studyLog.nextStep ||Math.ceil(courseInfo?.percent_learning ?? 0) ==100 && (
-            <Link
-              to={"/certificate/" + courseInfo?.slug}
-              className="text-primary-500 font-bold text-sm"
-            >
-              Xem chứng chỉ
-            </Link>
+          {!studyLog.nextStep ||
+            (Math.ceil(courseInfo?.percent_learning ?? 0) == 100 && (
+              <Link
+                to={"/certificate/" + courseInfo?.slug}
+                className="text-primary-500 font-bold text-sm hidden md:block"
+              >
+                Xem chứng chỉ
+              </Link>
+            ))}
+          {isLogin && (
+            <div className=" md:flex hidden items-center gap-2">
+              <Link
+                to={"/account/@" + user.username}
+                className="w-[32px] h-[32px]"
+              >
+                <img
+                  className="w-full h-full rounded-full object-cover"
+                  src={user.avatar_url}
+                  alt=""
+                />
+              </Link>
+            </div>
           )}
-          <div className="flex items-center gap-2">
-            <Link to={'/account/@'+user.username} className="w-[32px] h-[32px]"><img className="w-full h-full rounded-full object-cover" src={user.avatar_url} alt="" /></Link>
-          </div>
           {/* <div className="flex items-center gap-2">
             <GoPencil />
             Ghi chú
@@ -175,8 +197,8 @@ function StudyLayout() {
           </div>
           <div
             className={
-              "w-[23%]  border-l  flex-col " +
-              (isShowSidebar ? " flex" : " hidden")
+              "  bg-white w-[320px] md:w-[23%]  border-l  flex-col " +
+              (isShowSidebar ? " flex absolute md:relative top-0 right-0 bottom-0" : " hidden")
             }
           >
             <div className="font-bold text-primary-500 p-4 border-b shadow-sm">
@@ -333,8 +355,8 @@ function StudyLayout() {
             </button>
           )}
         </div>
-        <div className=" absolute top-0 right-0 bottom-0 flex items-center gap-4 pr-4">
-          <div className="font-bold text-primary-800 text-[16px] flex items-center gap-2">
+        <div className=" absolute top-0 right-0 bottom-0 flex items-center gap-4 pr-4 ">
+          <div className="font-bold text-primary-800 text-[16px] md:flex items-center gap-2 hidden">
             <FaHourglassStart className="text-green-500 animate-spin " />
             {studyLog && studyLog.stepInfo && studyLog.stepInfo.title}
           </div>

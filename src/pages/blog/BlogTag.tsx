@@ -48,11 +48,11 @@ function BlogTag() {
   }, [slug]);
  
   return (
-    <div className="w-content py-8 m-auto ">
+    <div className=" w-full px-5 md:px-0 xl:w-content py-8 m-auto ">
       <div className="flex-1">
         <div className="font-bold text-2xl">{tag?.name}</div>
         <div className="py-8">{tag?.description ?? "__"}</div>
-        <div className="flex gap-20">
+        <div className="flex gap-20 flex-col md:flex-row">
           <div className="flex flex-col gap-5 my-5 flex-1">
             {loading ? <DefaultSke />: blogs && blogs.length > 0 ? (
               blogs.map((item) => {

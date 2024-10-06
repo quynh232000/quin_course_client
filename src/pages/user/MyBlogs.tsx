@@ -22,7 +22,7 @@ function MyBlogs() {
  
 
   return (
-    <div className="w-content py-8 m-auto">
+    <div className="w-full px-5 xl:px-0 xl:w-content py-8 m-auto">
       <div className="flex-1">
         <div>
           <BtnBack/>
@@ -36,7 +36,7 @@ function MyBlogs() {
             Bản nháp (2)
           </div> */}
         </div>
-        <div className="flex gap-20">
+        <div className="flex flex-col md:flex-row gap-20">
           <div className="flex flex-col gap-5 my-5 flex-1">
             {loading ? (
               <DefaultSke />

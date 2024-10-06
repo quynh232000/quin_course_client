@@ -21,13 +21,13 @@ function SavedBlog() {
   }, []);
 
   return (
-    <div className="w-content py-8 m-auto">
+    <div className="w-full px-5 xl:px-0 xl:w-content py-8 m-auto">
       <div className="flex-1">
         <div>
           <BtnBack />
           <div className="font-bold text-xl py-8">Bài viết đã lưu</div>
         </div>
-        <div className="flex gap-20">
+        <div className="flex gap-20 flex-col md:flex-row">
           <div className="flex flex-col gap-5 my-5 flex-1">
             {loading ? (
               <DefaultSke />

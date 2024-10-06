@@ -6,11 +6,12 @@ import { ChangeEvent, useState } from "react";
 import { FormLogin } from "../types/formData";
 import { IoEyeOutline } from "react-icons/io5";
 import { SAsynCart, SLogin } from "../services/CommonService";
-import GoogleLogin from "../components/compoment/GoogleLogin";
 import { GoogleCredentialResponse } from "../types/app";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/reducers";
 import { asyncCart } from "../redux/reducers/appReducer";
+import GoogleLoginButton from "../components/compoment/GoogleLoginButton";
+import { sLoginWithGoogle } from "../services/UserService";
 // import ToastMessage from "../components/compoment/ToastMessage";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -75,42 +76,48 @@ function Login() {
     setResultError("");
     setResultSuccess("");
     SLogin(formData).then((res) => {
-      if (res.status) {
-        localStorage.setItem("USER_TOKEN", res.meta.access_token);
-        localStorage.setItem("IS_LOGIN", JSON.stringify(true));
-        localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
-        // asyn cart
-        if (cart) {
-          const listIds: number[] = [];
-          cart.forEach((i) => {
-            listIds.push(i.id);
-          });
-          SAsynCart(listIds, res.meta.access_token).then((res) => {
-            dispatch(asyncCart(res.data??[]));
-            setResultSuccess("Đăng nhập thành công!");
-            window.location.href = redirect ? redirect : "/";
-          });
-        } else {
-          window.location.href = redirect ? redirect : "/";
-        }
-      } else {
-        setResultError(res.message);
-      }
+      handleLoginSuccess(res);
     });
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleLoginSuccess = (res: any) => {
+    if (res.status) {
+      localStorage.setItem("USER_TOKEN", res.meta.access_token);
+      localStorage.setItem("IS_LOGIN", JSON.stringify(true));
+      localStorage.setItem("CURRENT_USER", JSON.stringify(res.data));
+      // asyn cart
+      if (cart) {
+        const listIds: number[] = [];
+        cart.forEach((i) => {
+          listIds.push(i.id);
+        });
+        SAsynCart(listIds, res.meta.access_token).then((res) => {
+          dispatch(asyncCart(res.data ?? []));
+          setResultSuccess("Đăng nhập thành công!");
+          window.location.href = redirect ? redirect : "/";
+        });
+      } else {
+        window.location.href = redirect ? redirect : "/";
+      }
+    } else {
+      setResultError(res.message);
+    }
+  };
   // login with google
   const handleLoginWithGoogle = (response: GoogleCredentialResponse) => {
-    console.log("Google login response:", response);
-    // Process login response here
-    // You can send the response to your backend for verification
+    if (response.credential) {
+      const token = response.credential;
+      sLoginWithGoogle(token).then((res) => {
+        handleLoginSuccess(res);
+      });
+    }
   };
 
   return (
-    <div className="w-content m-auto my-[32px]">
+    <div className="w-full px-5 xl:px-0 xl:w-content m-auto my-[32px]">
       {/* <ToastMessage type="success" title="Thành công!" message="okoko" /> */}
       <div className="border rounded-lg flex gap-5 shadow-sm px-5 py-12">
-        <div className="w-35 p-3">
+        <div className="w-full lg:w-35 p-3">
           <div>
             <div className="font-bold text-3xl">Đăng nhập</div>
             <div className="text-sm text-gray-500 mt-1">
@@ -169,6 +176,9 @@ function Login() {
               </div>
               <small className={"text-red-500"}>{errorInput.password}</small>
             </div>
+            <div className="flex text-sm hover:text-primary-500">
+              <Link to={"/forgot-password"}>Quên mật khẩu!</Link>
+            </div>
             <div>
               {resultSuccess && (
                 <div className="bg-success-50 border border-success-500 px-3 py-2 rounded-lg text-success-500">
@@ -215,14 +225,14 @@ function Login() {
             </div>
           </div>
           <div className="pt-4">
-            <GoogleLogin handleLoginWithGoogle={handleLoginWithGoogle} />
+            <GoogleLoginButton handleLoginWithGoogle={handleLoginWithGoogle} />
             {/* <button className="border shadow-sm rounded-lg w-full py-2 flex items-center justify-center gap-3 hover:bg-primary-50">
               <img src={i_google} alt="" />
               Đăng nhập với google
             </button> */}
           </div>
         </div>
-        <div className="flex-1 px-12">
+        <div className="flex-1 px-12 hidden lg:block">
           <img src={i_login} alt="" />
         </div>
       </div>

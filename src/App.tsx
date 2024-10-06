@@ -10,7 +10,7 @@ import Error from "./pages/Error";
 function App() {
   return (
     <>
-      <main className="flex px-2 md:px-0 w-full flex-wrap h-screen relative">
+      <main className="flex  md:px-0 w-full flex-wrap h-screen relative">
         <AuthProvider>
           <Routes>
             {publicRoutes.map((item, index) => {
@@ -38,21 +38,13 @@ function App() {
             {privateRoutes.map((item, index) => {
               const Layout = item.layout;
               return (
-                <Route key={index} element={<Layout />}>
-                  {item.routes.map((route, index) => {
-                    const Page = route.component;
-                    return (
-                      // <Route
-                      // key={index}
-                      //     path={route.path}
-                      //     element={
-                      //       <>
-                      //         <Page />
-                      //       </>
-                      //     }
-                      //   />
-                      <Route key={index} element={<PrivateRoute />}>
+                <Route key={index} element={<PrivateRoute />}>
+                  <Route key={index} element={<Layout />}>
+                    {item.routes.map((route, index) => {
+                      const Page = route.component;
+                      return (
                         <Route
+                          key={index}
                           path={route.path}
                           element={
                             <>
@@ -60,9 +52,9 @@ function App() {
                             </>
                           }
                         />
-                      </Route>
-                    );
-                  })}
+                      );
+                    })}
+                  </Route>
                 </Route>
               );
             })}
@@ -71,7 +63,6 @@ function App() {
           </Routes>
         </AuthProvider>
       </main>
-    
     </>
   );
 }

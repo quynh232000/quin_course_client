@@ -82,3 +82,13 @@ export class User {
     }
     
   }
+export class ChangePasswordObj{
+    password_old:string
+    password_new:string
+    password_confirm:string
+    constructor(){
+        this.password_old=''
+        this.password_new=''
+        this.password_confirm=''
+    }
+}

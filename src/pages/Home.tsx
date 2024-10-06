@@ -28,7 +28,7 @@ import {
   SGetVouchers,
 } from "../services/CommonService";
 import { GetCategoryById } from "../services/CategorySevice";
-import { FormatDate } from "../components/functions/tool";
+import { FormatDate, FormatPrice } from "../components/functions/tool";
 import CourseSkeleton from "../components/skeleton/CourseSkeleton";
 import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
 import TopicSke from "../components/skeleton/TopicSke";
@@ -108,8 +108,8 @@ const Home = () => {
 
   return (
     <div className="flex flex-col gap-[72px] py-[32px] ">
-      <section className="w-content m-auto">
-        <div className="w-full">
+      <section className=" w-full px-5 xl:w-content m-auto">
+        <div className="w-full hidden md:block">
           <Carousel
             className="rounded-xl bg-primary-500"
             navigation={({ setActiveIndex, activeIndex, length }) => (
@@ -167,7 +167,7 @@ const Home = () => {
           </Carousel>
         </div>
         {vouchers && vouchers.length > 0 && (
-          <div className="mt-8 w-full grid grid-cols-3 gap-3">
+          <div className="mt-8 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {vouchers.map((item) => {
               return (
                 <div
@@ -177,7 +177,7 @@ const Home = () => {
                   <div className="flex justify-between items-center">
                     <div className="font-bold">{item.title}</div>
                     <div>
-                      Mã:{" "}
+                      Mã:
                       <span className="text-primary-500 font-bold">
                         {item.code}
                       </span>
@@ -185,13 +185,13 @@ const Home = () => {
                   </div>
                   <div className="my-1">
                     Đơn tối thiểu:
-                    <span className="text-primary-600">{item.min_price} đ</span>
+                    <span className="text-primary-600">{FormatPrice(item.min_price)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="text-sm">
                       HSD: <span>{FormatDate(item.date_end)}</span>
                     </div>
-                    <button className="bg-primary-500 rounded-md text-sm py-0 px-4 text-white">
+                    <button disabled className="bg-primary-300 cursor-not-allowed rounded-md text-sm py-0 px-4 text-white">
                       Lưu
                     </button>
                   </div>
@@ -202,11 +202,11 @@ const Home = () => {
         )}
       </section>
       {/* kh free */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Khóa học miễn phí</div>
-            <span className="bg-green-500 h-fit text-white text-sm py-1 px-4 rounded-tl-2xl rounded-br-2xl">
+            <div className="font-bold text-2xl lg:text-3xl">Khóa học miễn phí</div>
+            <span className="bg-green-500 hidden md:block h-fit text-white text-sm py-1 px-4 rounded-tl-2xl rounded-br-2xl">
               Miễn phí
             </span>
           </div>
@@ -222,7 +222,7 @@ const Home = () => {
             <CourseSkeleton />
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-3 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
             {courseFee &&
               courseFee.length > 0 &&
               courseFee.map((item) => {
@@ -232,16 +232,16 @@ const Home = () => {
         )}
       </section>
       {/* kh sale */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Khóa học Sale</div>
+            <div className="font-bold text-2xl md:text-3xl">Khóa học Sale</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
           <div className="border rounded-lg shadow-sm flex justify-center items-center ">
             <img
               className="w-full object-cover h-full rounded-lg"
@@ -261,10 +261,10 @@ const Home = () => {
         </div>
       </section>
       {/* kh popular */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Khóa học phổ biến</div>
+            <div className="font-bold text-2xl md:text-3xl">Khóa học phổ biến</div>
             <span className="bg-green-500 h-fit text-white text-sm py-1 px-4 rounded-tl-2xl rounded-br-2xl">
               Miễn phí
             </span>
@@ -281,7 +281,7 @@ const Home = () => {
             <CourseSkeleton />
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-3 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
             {coursePolular &&
               coursePolular.length > 0 &&
               coursePolular.map((item) => {
@@ -293,15 +293,15 @@ const Home = () => {
 
       {/* become teacher */}
       <section className="bg-primary-50 py-5">
-        <div className="w-content m-auto grid grid-cols-2">
-          <div>
+        <div className="w-full px-5 xl:w-content m-auto grid grid-cols-1 lg:grid-cols-2">
+          <div className=" hidden lg:block">
             <img
               className="w-full h-full object-cover"
               src={i_teacher}
               alt=""
             />
           </div>
-          <div className="p-5">
+          <div className="p-5 ">
             <div className=" uppercase text-4xl font-bold">
               Trở thành <span className="text-primary-500">Giảng viên</span>{" "}
               trên Quin Course
@@ -347,10 +347,10 @@ const Home = () => {
         </div>
       </section>
       {/* teacher */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Giảng viên tiêu biểu</div>
+            <div className="font-bold text-2xl md:text-3xl">Giảng viên tiêu biểu</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
@@ -363,7 +363,7 @@ const Home = () => {
             <TeacherSkeleton />
           </div>
         ) : (
-          <div className="grid grid-cols-5 gap-3 mt-5">
+          <div className="grid  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-5">
             {teachers &&
               teachers.length > 0 &&
               teachers.map((item) => {
@@ -373,10 +373,10 @@ const Home = () => {
         )}
       </section>
       {/* chu de quan tam */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Chủ đề quan tâm</div>
+            <div className="font-bold text-2xl md:text-3xl">Chủ đề quan tâm</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
@@ -389,7 +389,7 @@ const Home = () => {
             <TopicSke />
           </div>
         ) : (
-          <div className="grid grid-cols-6 gap-3 mt-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3 mt-5">
             {cates &&
               cates.length > 0 &&
               cates.map((item) => {
@@ -399,22 +399,22 @@ const Home = () => {
         )}
       </section>
       {/* tin tuc */}
-      <section className="w-content m-auto">
+      <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Tin tức mỗi ngày</div>
+            <div className="font-bold text-2xl md:text-3xl">Tin tức mỗi ngày</div>
           </div>
           <Link to={'/blogs'} className="flex items-center text-primary-500 gap-2">
             Xem tất cả <FaChevronRight />
           </Link>
         </div>
         {l_news ? (
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-5">
             <NewsSke />
             <NewsSke />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-5">
             {blogs &&
               blogs.length > 0 &&
               blogs.map((item) => {
@@ -426,7 +426,7 @@ const Home = () => {
 
       {/* become business */}
       <section className="bg-primary-50 py-5">
-        <div className="w-content m-auto grid grid-cols-2">
+        <div className="w-full px-5 xl:w-content m-auto grid md:grid-cols-2 grid-cols-1">
           <div className="p-5">
             <div className=" uppercase text-4xl font-bold">
               Khóa học với{" "}
@@ -453,7 +453,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div>
+          <div className=" hidden md:block">
             <img
               className="w-full h-full object-cover"
               src={i_business}

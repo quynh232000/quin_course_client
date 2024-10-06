@@ -64,7 +64,7 @@ function CateHeader() {
           </div>
         </Button>
       </MenuHandler>
-      <MenuList className="text-primary-900">
+      <MenuList className="text-primary-900 z-50">
         {cates
           .filter((item: MCategory) => item.parent_id == 0)
           .map((cate: MCategory, index) => {
