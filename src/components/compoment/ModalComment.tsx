@@ -8,6 +8,7 @@ import CmtItemSke from "../skeleton/CmtItemSke";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type props = {
   isOpenComment: boolean;
@@ -21,6 +22,7 @@ function ModalComment({
   step,
   type = "step",
 }: props) {
+  const {t} = useTranslation()
   const { user, isLogin } = useSelector(
     (state: RootState) => state.authReducer
   );
@@ -108,7 +110,7 @@ function ModalComment({
                   <textarea
                     className="w-full border p-3 rounded-lg focus:border-primary-500"
                     rows={2}
-                    placeholder="Viết bình luận của bạn"
+                    placeholder={t('comment.t1')}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                   ></textarea>
@@ -120,14 +122,14 @@ function ModalComment({
                 </Button> */}
                 {comment == "" || cmtLoading ? (
                   <Button className="min-w-[120px] bg-primary-300 cursor-not-allowed py-2">
-                    Bình luận
+                    {t('comment.t2')}
                   </Button>
                 ) : (
                   <Button
                     onClick={handleComment}
                     className="min-w-[120px] bg-primary-500 py-2"
                   >
-                    Bình luận
+                    {t('comment.t2')}
                   </Button>
                 )}
               </div>
@@ -135,10 +137,10 @@ function ModalComment({
 
             <div className="flex justify-between items-center py-5">
               <div className="font-bold text-gray-700">
-                {totalCmt} Bình luận
+                {totalCmt} {t('comment.t2')}
               </div>
               <div className="text-sm font-sm text-gray-500">
-                Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé
+              {t('comment.t3')}
               </div>
             </div>
           </div>
@@ -164,13 +166,12 @@ function ModalComment({
               })
             ) : (
               <div className="text-center text-gray-500 mt-5">
-                Chưa có bình luận nào
+                {t('comment.t10')}
               </div>
             )}
             {listComment.length > 0 && (
               <div className="flex justify-center mt-5 text-sm text-gray-500 items-center gap-2 border-t pt-5">
-                <GiCheckMark className="text-green-500 text-lg" /> Đã tải hết
-                bình luận
+                <GiCheckMark className="text-green-500 text-lg" />{t('comment.t9')}
               </div>
             )}
           </div>

@@ -6,7 +6,7 @@ import "./components/GlobalStyles/custom.css";
 import { AuthProvider } from "./routes/provider/AuthProvider";
 import PrivateRoute from "./routes/PrivateRoute";
 import Error from "./pages/Error";
-
+import './i18n/i18n';
 function App() {
   return (
     <>

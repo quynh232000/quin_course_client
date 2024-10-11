@@ -1,6 +1,7 @@
 import * as request from "../utils/HttpRequest";
 import {
   ResendEmail,
+  UpdateSocial,
   UserLogin,
   UserRegister,
   UserToken,
@@ -193,6 +194,22 @@ export const SForgotPassword = async (email: string) => {
 export const SChangeNewPassword = async (password: string,token:string) => {
   try {
     const res = await request.POST(`auth/changenewpassword`, {password,token});
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SUpdateProfile = async (data:FormData) => {
+  try {
+    const res = await request.POST(`auth/update-profile`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const SUpdateSocial = async (data:UpdateSocial) => {
+  try {
+    const res = await request.POST(`auth/update-social`, data);
     return res;
   } catch (error) {
     console.log(error);

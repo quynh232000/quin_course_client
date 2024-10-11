@@ -9,11 +9,13 @@ import { SAddCart, SEnrollCourse } from "../../services/CommonService";
 import { FaArrowRightLong } from "react-icons/fa6";
 import ToastMessage from "../compoment/ToastMessage";
 import { addToCart } from "../../redux/reducers/appReducer";
+import { useTranslation } from "react-i18next";
 
 type props = {
   course: MCourse;
 };
 function ProductItem({ course }: props) {
+  const {t} = useTranslation()
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
   const [enrollSuccess, setEnrollSuccess] = useState(false);
@@ -99,14 +101,14 @@ function ProductItem({ course }: props) {
         setToastCart({
           status: true,
           type: "success",
-          message: "Thêm khóa học vào giỏ hàng thành công!",
+          message: t('product.add_cart_success'),
         });
         setBtnAddCart({ ...btnAddCart, add: true });
       } else if (btnAddCart.buynow == false && type == "buynow") {
         setToastCart({
           status: true,
           type: "success",
-          message: "Đã thêm khóa học vào giỏ hàng!",
+          message: t('product.add_cart_success'),
         });
         setTimeout(() => {
           navigate("/cart");
@@ -120,7 +122,7 @@ function ProductItem({ course }: props) {
       {enrollErorr && <ToastMessage type="error" message={enrollErorr} />}
       {toastCart.status && (
         <ToastMessage
-          title="Thành công!"
+          title={t('product.success')}
           type={toastCart.type}
           message={toastCart.message}
         />
@@ -213,7 +215,7 @@ function ProductItem({ course }: props) {
                 onClick={() => handleCart("buynow")}
                 className="bg-primary-500 cursor-pointer text-center flex items-center justify-center text-white hover:bg-primary-600 flex-1 rounded-lg"
               >
-                Mua ngay
+               {t('product.buy_now')}
               </button>
             </div>
           ) : enrollSuccess ? (
@@ -222,7 +224,7 @@ function ProductItem({ course }: props) {
                 to={"/learning/" + course.slug}
                 className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
               >
-                <FaArrowRightLong /> Vào học
+                <FaArrowRightLong /> {t('product.join_learning')}
               </Link>
             </div>
           ) : isLoading ? (
@@ -260,7 +262,7 @@ function ProductItem({ course }: props) {
           ) : (
             <div onClick={handleEnroll} className=" flex-1 flex items-end">
               <button className="bg-deep-orange-500 w-full rounded-lg text-white py-2 hover:bg-deep-orange-600 shadow-sm hover:shadow-none">
-                Tham gia khóa học
+                {t('product.join')}
               </button>
             </div>
           )}

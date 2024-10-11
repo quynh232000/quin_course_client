@@ -331,7 +331,7 @@ export const SCreateNote = async (step_id: number, note: string) => {
     console.log(error);
   }
 };
-export const SDeleteTagEdit = async (blog_id: number, tag_id: string) => {
+export const SDeleteTagEdit = async (blog_id: number, tag_id: number) => {
   try {
     const res = await request.POST(
       `blogs/${blog_id}/delete_tag_blog/${tag_id}`

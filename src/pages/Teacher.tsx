@@ -31,7 +31,9 @@ import {
   MTeacherDashboard,
 } from "../types/app";
 import DefaultSke from "../components/skeleton/DefaultSke";
+import { useTranslation } from "react-i18next";
 function Teacher() {
+  const {t} = useTranslation()
   const { username } = useParams();
   const naviate = useNavigate();
 
@@ -120,6 +122,7 @@ const [loading,setLoading] = useState(false)
                   socials.map((item) => {
                     return (
                       <Link
+                      key={item.id}
                         to={item.type == "zalo" ? "tel:" + item.url : item.url}
                         target="__blank"
                         className="border rounded-md p-1"
@@ -133,7 +136,7 @@ const [loading,setLoading] = useState(false)
                   })}
               </div>
               <button className="border py-1 text-sm px-3 rounded-lg flex items-center gap-1">
-                <RiMessage3Fill /> Tin nhắn
+                <RiMessage3Fill /> {t('teacher.message')}
               </button>
             </div>
           </div>
@@ -154,7 +157,7 @@ const [loading,setLoading] = useState(false)
             <div className="font-bold text-primary-800 text-3xl">
               {teacherDashboard?.count_students}
             </div>
-            <div className="text-primary-500 font-bold">Tổng số học viên</div>
+            <div className="text-primary-500 font-bold">{t('teacher.t_student')}</div>
           </div>
         </div>
 
@@ -170,7 +173,7 @@ const [loading,setLoading] = useState(false)
             <div className="font-bold text-primary-800 text-3xl">
               {teacherDashboard?.count_courses}
             </div>
-            <div className="text-primary-500 font-bold">Tổng số khóa học</div>
+            <div className="text-primary-500 font-bold">{t('teacher.t_course')}</div>
           </div>
         </div>
         <div className="border shadow-sm rounded-xl p-3 flex justify-between">
@@ -183,7 +186,7 @@ const [loading,setLoading] = useState(false)
           </div>
           <div className="flex flex-col text-end gap-1 justify-center">
             <div className="font-bold text-primary-800 text-3xl">--</div>
-            <div className="text-primary-500 font-bold">Tổng số đánh giá</div>
+            <div className="text-primary-500 font-bold">{t('teacher.t_review')}</div>
           </div>
         </div>
 
@@ -197,14 +200,14 @@ const [loading,setLoading] = useState(false)
           </div>
           <div className="flex flex-col text-end gap-1 justify-center">
             <div className="font-bold text-primary-800 text-3xl">--</div>
-            <div className="text-primary-500 font-bold">Kết nối tổ chức</div>
+            <div className="text-primary-500 font-bold">{t('teacher.t_company')}</div>
           </div>
         </div>
       </div>
       {/* teacher info */}
       <div className="bg-white">
         <div className=" w-full px-5 xl:w-content m-auto">
-          <div className="font-bold text-3xl mb-4">Giới thiệu giảng viên</div>
+          <div className="font-bold text-3xl mb-4">{t('teacher.intro')}</div>
           <div className="flex gap-8">
             <div className="flex-1">
               {teacher?.teacher_info.description ?? "Đang cập nhật..."}
@@ -232,10 +235,10 @@ const [loading,setLoading] = useState(false)
       <section className=" w-full px-5 xl:w-content m-auto mb-8">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Khóa học của tác giả</div>
+            <div className="font-bold text-3xl">{t('teacher.course')}</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')} <FaChevronRight />
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
@@ -245,19 +248,19 @@ const [loading,setLoading] = useState(false)
             })
           ) : (
             <div className="text-center my-8 text-deep-orange-500 ">
-              Chưa có khóa học nào!
+              {t('teacher.no_course')}
             </div>
           )}
         </div>
       </section>
       {/* bang tin */}
-      <section className=" w-full px-5 xl:w-content m-auto">
+      <section className=" w-full px-5 xl:w-content m-auto mb-24">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-3xl">Bảng tin của tác giả</div>
+            <div className="font-bold text-3xl">{t('teacher.news')}</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('teacher.see_all')} <FaChevronRight />
           </button>
         </div>
         {blogs && blogs.length > 0 ? (
@@ -268,7 +271,7 @@ const [loading,setLoading] = useState(false)
           </div>
         ) : (
           <div className="text-deep-orange-500 text-center py-8">
-            Chưa có bài viết nào!
+            {t('teacher.no_news')}
           </div>
         )}
       </section>

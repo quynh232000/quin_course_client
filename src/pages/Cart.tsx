@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { FormatPrice } from "../components/functions/tool";
 import i_nocart from "../assets/images/nocart.avif";
 import { setCreateOrder } from "../redux/reducers/appReducer";
+import { useTranslation } from "react-i18next";
 
 const paymentMethods = [
   {
@@ -27,6 +28,7 @@ const paymentMethods = [
   },
 ];
 function Cart() {
+  const {t} = useTranslation()
   const { cart } = useSelector((state: RootState) => state.appReducer);
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
   const [newCart, setNewCart] = useState<number[]>([]);
@@ -70,7 +72,7 @@ function Cart() {
     <div className="flex flex-col gap-[72px] pt-[32px] mb-16">
       <div className="w-full px-5 xl:w-content m-auto ">
         <div className="font-bold text-3xl mb-4">
-          Giỏ hàng của bạn ({cart.length})
+        {t('cart.title')} ({cart.length})
         </div>
         <div className="flex flex-col md:flex-row gap-5">
           <div className="flex-1 ">
@@ -103,7 +105,7 @@ function Cart() {
                               to={"/teacher/@" + list[0].user.username}
                               className="text-sm text-primary-500"
                             >
-                              Xem thêm
+                              {t('home.see_more')}
                             </Link>
                           </div>
                         </div>
@@ -132,14 +134,14 @@ function Cart() {
                     <img width={228} src={i_nocart} alt="" />
                   </div>
                   <div className="text-center text-deep-orange-500 font-bold py-5">
-                    Chưa có khóa học nào trong giỏ hàng!
+                  {t('cart.no_cart')}
                   </div>
                   <div className="flex justify-center">
                     <Link
                       to={"/"}
                       className="w-fit px-8 py-2 text-white bg-primary-500 hover:bg-primary-600 font-bold rounded-lg  hover:text-white"
                     >
-                      Thêm khóa học vào giỏ hàng
+                     {t('cart.add_cart')}
                     </Link>
                   </div>
                 </div>
@@ -149,7 +151,7 @@ function Cart() {
           <div className="w-full md:w-30 px-2 flex flex-col gap-3">
             <div>
               <div className="font-bold text-lg">
-                Chọn phương thức thanh toán
+              {t('cart.payment')}
               </div>
               <div className="flex flex-col gap-3 py-2">
                 {paymentMethods.map((item) => {
@@ -174,7 +176,7 @@ function Cart() {
             </div>
 
             <div>
-              <div className="font-bold text-lg">Khuyến mãi</div>
+              <div className="font-bold text-lg">{t('cart.voucher')}</div>
               <div className="flex my-3 border border-primary-500 rounded-xl pl-2">
                 <input
                   type="text"
@@ -182,7 +184,7 @@ function Cart() {
                   className="flex-1 px-2 text-primary-500 "
                 />
                 <button className="bg-primary-500 text-white font-sm rounded-r-lg py-2 px-3 hover:bg-primary-600">
-                  Áp dụng
+                {t('cart.apply')}
                 </button>
               </div>
               {/* <div className="border rounded-lg shadow-sm">
@@ -242,21 +244,21 @@ function Cart() {
             </div>
 
             <div>
-              <div className="font-bold text-xl mt-2">Thông tin đơn hàng</div>
+              <div className="font-bold text-xl mt-2">{t('cart.cart_info')}</div>
               <div className="flex flex-col gap-2 my-2">
                 <div className="flex justify-between items-center">
-                  <div className="text-gray-500">Số khóa học:</div>
+                  <div className="text-gray-500">{t('cart.count')}:</div>
                   <div className="text-gray-500">x {cart.length}</div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <div className="text-gray-500">Tạm tính:</div>
+                  <div className="text-gray-500">{t('cart.sub')}:</div>
                   <div className="text-primary-500 font-bold">
                     {FormatPrice(total)}
                   </div>
                 </div>
                 {priceVoucher > 0 && (
                   <div className="flex justify-between items-center">
-                    <div className="text-gray-500">Khuyến mãi:</div>
+                    <div className="text-gray-500">{t('cart.voucher')}:</div>
                     <div className="text-gray-500 font-bold">
                       {FormatPrice(priceVoucher)}
                     </div>
@@ -264,7 +266,7 @@ function Cart() {
                 )}
 
                 <div className="flex justify-between items-center border-t pt-2">
-                  <div className="text-gray-500 font-bold">Tổng cộng:</div>
+                  <div className="text-gray-500 font-bold">{t('cart.total')}:</div>
                   <div className="text-primary-500 font-bold text-3xl">
                     {FormatPrice(total + priceVoucher)}
                   </div>
@@ -277,10 +279,10 @@ function Cart() {
                   onClick={handleCheckout}
                   className="bg-primary-500 text-white text-center w-full py-2 rounded-lg hover:bg-primary-600"
                 >
-                  Thanh toán
+                {t('cart.pay')}
                 </button>
-                <button className="border text-center w-full py-2 rounded-lg border-gray-400 hover:bg-gray-50 shadow-sm">
-                  Thanh toán với doanh nghiệp
+                <button disabled className="border text-center w-full py-2 rounded-lg border-gray-300 bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm">
+                {t('cart.pay_business')}
                 </button>
               </div>
             )}

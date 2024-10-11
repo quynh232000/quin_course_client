@@ -14,8 +14,10 @@ import {
 import { MOrderCreate, SettingItem } from "../types/app";
 import { FormatPrice } from "../components/functions/tool";
 import { clearCart } from "../redux/reducers/appReducer";
+import { useTranslation } from "react-i18next";
 
 function Checkout() {
+  const {t} = useTranslation()
   const { checkout } = useSelector((state: RootState) => state.appReducer);
   const [typeBank, setTypeBank] = useState<string | null>(checkout.name);
   const [orderInfo, setOrderInfo] = useState<MOrderCreate>();
@@ -58,7 +60,6 @@ function Checkout() {
 
   const checkAcountFc = (order_code: string, retries = 30) => {
     if (retries <= 0) {
-      console.log("Max retries reached");
       setIsLoop(false);
       return; // Stop further calls
     }
@@ -175,7 +176,7 @@ function Checkout() {
             </div>
             <div className="flex  items-center gap-2 py-4">
               <div className="flex items-center gap-2 font-bold">
-                <FaPenClip /> Mã đơn hàng:
+                <FaPenClip /> {t('cart.code')}:
               </div>
               <div className="font-bold text-primary-500 text-lg">
                 {orderInfo?.order_code}
@@ -183,7 +184,7 @@ function Checkout() {
             </div>
             <div className="bg-primary-900 p-4 text-white rounded-lg">
               <div className="border-b-2 border-primary-700 pb-2">
-                Chi tiết thanh toán
+              {t('cart.detail')}
               </div>
               <div className="flex justify-between items-center pt-4">
                 <div>Tổng tiền:</div>
@@ -196,13 +197,13 @@ function Checkout() {
               (confirmLoading ? (
                 <button disabled className="mt-8 ">
                   <div className="w-full bg-gray-300 text-gray-500 cursor-not-allowed rounded-lg py-2 text-center">
-                    Xác nhận thanh toán
+                  {t('cart.confirm')}
                   </div>
                 </button>
               ) : (
                 <button onClick={handleConfirmPayment} className="mt-8 ">
                   <div className="w-full bg-primary-500 hover:bg-primary-600 text-white rounded-lg py-2 text-center">
-                    Xác nhận thanh toán
+                  {t('cart.confirm')}
                   </div>
                 </button>
               ))}
@@ -233,7 +234,7 @@ function Checkout() {
               </div>
               <div className="flex flex-col items-center">
                 <div className="text-primary-500 text-lg">
-                  Thanh toán thành công!
+                {t('cart.success')}
                 </div>
                
               </div>
@@ -264,23 +265,23 @@ function Checkout() {
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1 font-bold">
                       <FaCanadianMapleLeaf />
-                      Bước 1:
+                      {t('cart.step')} 1:
                     </div>
                     <div>
-                      Mở app{" "}
+                    {t('cart.open_app')}
                       <span className="font-bold text-primary-500">
                         {typeBank == "momo" ? "MOMO" : "BANKING"}
                       </span>{" "}
-                      và quét mã QR
+                      {t('cart.qr')}
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="flex items-center gap-1 font-bold">
                       <FaCanadianMapleLeaf />
-                      Bước 2:
+                      {t('cart.step')} 2:
                     </div>
                     <div className="flex-1">
-                      Đảm bảo nội dung chuyển khoản là{" "}
+                    {t('cart.content')}
                       <span className="font-bold text-primary-500">
                         {orderInfo?.order_code}
                       </span>
@@ -289,20 +290,20 @@ function Checkout() {
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1 font-bold">
                       <FaCanadianMapleLeaf />
-                      Bước 3:
+                      {t('cart.step')} 3:
                     </div>
-                    <div>Thực hiện thanh toán</div>
+                    <div>{t('cart.continue_pay')}</div>
                   </div>
                 </div>
               </div>
               {bankInfo && (
                 <div className="py-5">
                   <div className="font-bold text-primary-700">
-                    Chuyển khoản thủ công
+                  {t('cart.bank.t1')}
                   </div>
                   <div className="py-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-3 border rounded-xl bg-white shadow-md">
-                      <div className="font-bold text-sm">Số tài khoản</div>
+                      <div className="font-bold text-sm"> {t('cart.bank.t2')}</div>
                       <div className="mt-4 flex justify-between items-center">
                         <div className="font-bold text-xl">
                           {typeBank == "bank"
@@ -319,7 +320,7 @@ function Checkout() {
                       </div>
                     </div>
                     <div className="p-3 border rounded-xl bg-white shadow-md">
-                      <div className="font-bold text-sm">Tên tài khoản</div>
+                      <div className="font-bold text-sm">T {t('cart.bank.t3')}</div>
                       <div className="mt-4 flex justify-between items-center">
                         <div className="font-bold text-xl">
                           {typeBank == "bank"
@@ -336,7 +337,7 @@ function Checkout() {
                       </div>
                     </div>
                     <div className="p-3 border rounded-xl bg-white shadow-md">
-                      <div className="font-bold text-sm">Nội dung</div>
+                      <div className="font-bold text-sm"> {t('cart.bank.t4')}</div>
                       <div className="mt-4 flex justify-between items-center">
                         <div className="font-bold text-xl text-primary-500">
                           {orderInfo?.order_code}
@@ -352,7 +353,7 @@ function Checkout() {
                     {typeBank == "bank" && bankInfo && (
                       <div className="p-3 border rounded-xl bg-white shadow-md">
                         <div className="font-bold text-sm">
-                          Chi nhánh ngân hàng
+                        {t('cart.bank.t5')}
                         </div>
                         <div className="mt-4 flex justify-between items-center">
                           <div className="font-bold  ">
@@ -376,12 +377,10 @@ function Checkout() {
 
               <div>
                 <div className=" font-bold underline text-primary-500">
-                  Lưu ý.
+                {t('cart.footer.note')}
                 </div>
                 <div className="my-2">
-                  Tối đa 5 phút sau thời gian chuyển khoản, nếu hệ thống không
-                  phản hồi. Vui lòng liên hệ ngay bộ phận hỗ trợ của Quin
-                  Course.
+                {t('cart.footer.t1')}
                 </div>
                 <div className="flex flex-col gap-2 pt-2 pl-4">
                   <div className="flex gap-2 ">

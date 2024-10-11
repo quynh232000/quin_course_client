@@ -34,6 +34,7 @@ import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
 import TopicSke from "../components/skeleton/TopicSke";
 import NewsSke from "../components/skeleton/NewsSke";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
   const [banners, setBanners] = useState<MBanner[] | null>(null);
@@ -105,7 +106,7 @@ const Home = () => {
       }
     });
   }, []);
-
+const {t} = useTranslation()
   return (
     <div className="flex flex-col gap-[72px] py-[32px] ">
       <section className=" w-full px-5 xl:w-content m-auto">
@@ -153,7 +154,7 @@ const Home = () => {
                             <span>
                               <FaAnglesRight />
                             </span>
-                            Mua khóa học
+                            {t('home.buy_course')}
                           </button>
                         </div>
                       </div>
@@ -177,22 +178,22 @@ const Home = () => {
                   <div className="flex justify-between items-center">
                     <div className="font-bold">{item.title}</div>
                     <div>
-                      Mã:
+                    {t('home.code')}:
                       <span className="text-primary-500 font-bold">
                         {item.code}
                       </span>
                     </div>
                   </div>
                   <div className="my-1">
-                    Đơn tối thiểu:
+                  {t('home.order_min')}:
                     <span className="text-primary-600">{FormatPrice(item.min_price)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="text-sm">
-                      HSD: <span>{FormatDate(item.date_end)}</span>
+                    {t('home.hsd')}: <span>{FormatDate(item.date_end)}</span>
                     </div>
                     <button disabled className="bg-primary-300 cursor-not-allowed rounded-md text-sm py-0 px-4 text-white">
-                      Lưu
+                    {t('home.save')}
                     </button>
                   </div>
                 </div>
@@ -205,13 +206,13 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl lg:text-3xl">Khóa học miễn phí</div>
+            <div className="font-bold text-2xl lg:text-3xl">{t('home.free')}</div>
             <span className="bg-green-500 hidden md:block h-fit text-white text-sm py-1 px-4 rounded-tl-2xl rounded-br-2xl">
-              Miễn phí
+            {t('home.label_free')}
             </span>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')}<FaChevronRight />
           </button>
         </div>
         {l_free ? (
@@ -235,10 +236,10 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Khóa học Sale</div>
+            <div className="font-bold text-2xl md:text-3xl">{t('home.sale')}</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')} <FaChevronRight />
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">
@@ -264,13 +265,11 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Khóa học phổ biến</div>
-            <span className="bg-green-500 h-fit text-white text-sm py-1 px-4 rounded-tl-2xl rounded-br-2xl">
-              Miễn phí
-            </span>
+            <div className="font-bold text-2xl md:text-3xl">{t('home.popular')}</div>
+            
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')}<FaChevronRight />
           </button>
         </div>
         {l_popular ? (
@@ -303,12 +302,11 @@ const Home = () => {
           </div>
           <div className="p-5 ">
             <div className=" uppercase text-4xl font-bold">
-              Trở thành <span className="text-primary-500">Giảng viên</span>{" "}
-              trên Quin Course
+            {t('home.become')} <span className="text-primary-500">{t('home.teacher')}</span>{" "}
+            {t('home.on_quin')}
             </div>
             <span className="pt-2">
-              Mang đến giá trị cho chính bạn và người khác. Chúng tôi cung cấp
-              công cụ dạy những kỹ năng bạn yêu thích.
+            {t('home.teacher_content')}
             </span>
             <div className="my-5 flex flex-col gap-4">
               <div className="flex gap-4 items-center">
@@ -317,11 +315,10 @@ const Home = () => {
                 </div>
                 <div>
                   <div className="font-bold mb-1">
-                    Cùng nhau kết nối, chia sẻ kiến thức
+                    {t('home.t_share')}
                   </div>
                   <span>
-                    Kết nối, chia sẻ những kiến thức bổ ích cùng nhau phát
-                    triển, cùng nhau xây dựng.
+                    {t('home.t_connect')}
                   </span>
                 </div>
               </div>
@@ -330,17 +327,16 @@ const Home = () => {
                   <img width={65} src={i_kynang} alt="" />
                 </div>
                 <div>
-                  <div className="font-bold mb-1">Hoàn thiện kỹ năng</div>
+                  <div className="font-bold mb-1"> {t('home.t_complete')}</div>
                   <span>
-                    Hoàn thiện kỹ năng, kinh nghiệm nhiều hơn, sự va chạm của
-                    chính bạn, thử thách chính bản thân để phát triển.
+                  {t('home.t_complete_1')}
                   </span>
                 </div>
               </div>
             </div>
             <div className="pt-3">
               <button className="bg-primary-500 text-white py-2 px-24 rounded-lg hover:bg-primary-600">
-                Đăng ký ngay
+              {t('home.register_now')}
               </button>
             </div>
           </div>
@@ -350,10 +346,10 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Giảng viên tiêu biểu</div>
+            <div className="font-bold text-2xl md:text-3xl"> {t('home.famous_teacher')}</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')}<FaChevronRight />
           </button>
         </div>
         {l_teacher ? (
@@ -376,10 +372,10 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Chủ đề quan tâm</div>
+            <div className="font-bold text-2xl md:text-3xl"> {t('home.topic')}</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')}<FaChevronRight />
           </button>
         </div>
         {l_topic ? (
@@ -402,10 +398,10 @@ const Home = () => {
       <section className="w-full px-5 xl:w-content m-auto">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Tin tức mỗi ngày</div>
+            <div className="font-bold text-2xl md:text-3xl"> {t('home.news')}</div>
           </div>
           <Link to={'/blogs'} className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')}<FaChevronRight />
           </Link>
         </div>
         {l_news ? (
@@ -429,26 +425,25 @@ const Home = () => {
         <div className="w-full px-5 xl:w-content m-auto grid md:grid-cols-2 grid-cols-1">
           <div className="p-5">
             <div className=" uppercase text-4xl font-bold">
-              Khóa học với{" "}
-              <span className="text-primary-500">doanh nghiệp</span>
-              trên Quin Course
+            {t('home.learn_with')}
+              <span className="text-primary-500"> {t('home.bussiness')}</span>
+              {t('home.on_quin')}
             </div>
             <div className="mt-2">
-              Nâng cao ký năng của đội nhóm, cải thiện năng xuất làm việc hiệu
-              quả cao, giúp doanh nghiệp của bạn phát triển hơn mỗi ngày
+            {t('home.nangcao')}
             </div>
             <div className="mt-4 w-full">
-              <div className="font-bold mb-2 pt-2">Nhập email tư vấn</div>
+              <div className="font-bold mb-2 pt-2"> {t('home.enter_email')}</div>
               <div className="flex  gap-5 ">
                 <div className="flex-1 rounded-lg">
                   <input
                     type="text"
-                    placeholder="Nhập email.."
+                    placeholder={t('home.enter_email')}
                     className="w-full py-2 px-3 rounded-lg"
                   />
                 </div>
                 <div className=" bg-primary-500 text-white py-2 px-8 rounded-lg">
-                  Gửi
+                {t('home.send')}
                 </div>
               </div>
             </div>

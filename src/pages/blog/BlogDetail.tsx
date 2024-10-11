@@ -16,8 +16,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import SaveShare from "../../components/items/SaveShare";
 import ModalComment from "../../components/compoment/ModalComment";
+import { useTranslation } from "react-i18next";
 
 function BlogDetail() {
+  const {t} = useTranslation()
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -151,7 +153,7 @@ const [isOpenComment,setIsOpenComment] = useState(false)
               })}
           </div>
           <div>
-            <div className="font-bold text-lg">Bài đăng cùng tác giả</div>
+            <div className="font-bold text-lg">{t('blog.t20')}</div>
             <div className=" p-4 flex flex-col gap-2">
               {blogAuthhor.length > 0 &&
                 blogAuthhor.map((item) => {

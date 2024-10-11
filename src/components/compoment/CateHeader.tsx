@@ -11,9 +11,11 @@ import { FaAngleRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { GetCategoriesService } from "../../services/CategorySevice";
 import { MCategory } from "../../types/app";
+import { useTranslation } from "react-i18next";
 
 function CateHeader() {
-  const [cates, setCates] = useState([]);
+  const {t} = useTranslation() 
+    const [cates, setCates] = useState([]);
   useEffect(() => {
     GetCategoriesService().then((res) => {
       if (res.status) {
@@ -60,7 +62,7 @@ function CateHeader() {
             <div className="text-[30px] font-normal">
               <BiCategory />
             </div>
-            <div>Danh mục</div>
+            <div>{t('header.collection')}</div>
           </div>
         </Button>
       </MenuHandler>

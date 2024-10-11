@@ -14,12 +14,14 @@ import {
   SDeleteItemCart,
   SEnrollCourse,
 } from "../../services/CommonService";
+import { useTranslation } from "react-i18next";
 
 type props = {
   course: MCourse;
   type?: "progress" | "cart";
 };
 function ProductCollectItem({ course, type }: props) {
+  const {t} = useTranslation()
   const { user } = useSelector((state: RootState) => state.authReducer);
   const { currentUser } = useSelector((state: RootState) => state.appReducer);
   const [toastCart, setToastCart] = useState<{
@@ -216,11 +218,11 @@ function ProductCollectItem({ course, type }: props) {
           </div>
           <div className="flex gap-4">
             <div className="text-gray-500">
-              Thời lượng:{" "}
+            {t('product.duration')}:{" "}
               {course.duration ? formatDuration(+course.duration) : "--"}
             </div>
             <div className="text-gray-500">
-              Giáo trình: {course.total_steps} bài giảng
+            {t('product.lecture')}: {course.total_steps} {t('product.section')}
             </div>
           </div>
           {/* <div className="text-gray-500">Quyền truy cập: <span className="text-gray-700">Doanh nghiệp</span></div> */}
@@ -278,7 +280,7 @@ function ProductCollectItem({ course, type }: props) {
                   onClick={() => handleCart("buynow")}
                   className="bg-primary-500 cursor-pointer text-center flex  items-center justify-center px-16 text-white hover:bg-primary-600 md:flex-none flex-1 w-fit rounded-lg"
                 >
-                  Mua ngay
+                  {t('product.buy_now')}
                 </button>
               </div>
             ) : enrollSuccess ? (
@@ -287,7 +289,7 @@ function ProductCollectItem({ course, type }: props) {
                   to={"/learning/" + course.slug}
                   className="border border-primary-500 px-16 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
                 >
-                  <FaArrowRightLong /> Vào học
+                  <FaArrowRightLong /> {t('product.enrollment')}
                 </Link>
               </div>
             ) : isLoading ? (
@@ -325,7 +327,7 @@ function ProductCollectItem({ course, type }: props) {
             ) : (
               <div onClick={handleEnroll} className=" flex-1 flex items-end">
                 <button className="bg-deep-orange-500  px-16 w-full md:w-fit rounded-lg text-white py-2 hover:bg-deep-orange-600 shadow-sm hover:shadow-none">
-                  Tham gia khóa học
+                {t('product.join')}
                 </button>
               </div>
             )}
@@ -339,14 +341,14 @@ function ProductCollectItem({ course, type }: props) {
               to={"/learning/" + course.slug}
               className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 px-16 py-2 rounded-lg flex gap-2 items-center"
             >
-              <FaArrowRightLong /> Vào học
+              <FaArrowRightLong /> {t('product.join_learning')}
             </Link>
             {course.percent_learning == 100 && (
               <Link
                 to={"/certificate/" + course.slug}
                 className="bg-primary-500 text-white hover:bg-primary-600 px-16 py-2 rounded-lg"
               >
-                Xem chứng chỉ
+               {t('product.certificate')}
               </Link>
             )}
           </div>
@@ -359,7 +361,7 @@ function ProductCollectItem({ course, type }: props) {
               className="flex gap-2 py-2 px-4 text-red-500 border border-red-500 rounded-lg hover:bg-red-50 items-center"
             >
               <FaRegTrashCan />
-              Xóa
+              {t('product.delete')}
             </button>
           </div>
         )}

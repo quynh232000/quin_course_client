@@ -23,47 +23,49 @@ import icon_wow from "../../assets/icons/icon_woa.svg";
 import icon_like from "../../assets/icons/icon_like.svg";
 import icon_heart from "../../assets/icons/icon_heart.svg";
 import icon_haha from "../../assets/icons/icon_haha.svg";
+import { useTranslation } from "react-i18next";
 type props = {
   comment: MComment;
   setTotalCmt: (t: number) => void;
   totalCmt: number;
 };
 
-const menuIcons = [
-  {
-    id: 1,
-    icon: icon_like,
-    title: "Like",
-    type: "like",
-    label: "Đã thích",
-    color: "#0093fc",
-  },
-  {
-    id: 2,
-    icon: icon_heart,
-    title: "Love",
-    type: "love",
-    label: "Đã yêu thích",
-    color: "#f33e58",
-  },
-  {
-    id: 3,
-    icon: icon_haha,
-    title: "Haha",
-    type: "haha",
-    label: "Haha",
-    color: "#f7b125",
-  },
-  {
-    id: 4,
-    icon: icon_wow,
-    title: "Wow",
-    type: "wow",
-    label: "Wow",
-    color: "#f7b125",
-  },
-];
 function CommentItem({ comment, setTotalCmt, totalCmt }: props) {
+  const {t} = useTranslation()
+  const menuIcons = [
+    {
+      id: 1,
+      icon: icon_like,
+      title: "Like",
+      type: "like",
+      label: t('comment.t11'),
+      color: "#0093fc",
+    },
+    {
+      id: 2,
+      icon: icon_heart,
+      title: "Love",
+      type: "love",
+      label: t('comment.t5'),
+      color: "#f33e58",
+    },
+    {
+      id: 3,
+      icon: icon_haha,
+      title: "Haha",
+      type: "haha",
+      label: "Haha",
+      color: "#f7b125",
+    },
+    {
+      id: 4,
+      icon: icon_wow,
+      title: "Wow",
+      type: "wow",
+      label: "Wow",
+      color: "#f7b125",
+    },
+  ];
   const { user, isLogin } = useSelector(
     (state: RootState) => state.authReducer
   );
@@ -164,18 +166,18 @@ function CommentItem({ comment, setTotalCmt, totalCmt }: props) {
               onClick={() => setIsEdit(false)}
               className="py-2 px-8 bg-orange-50 hover:bg-orange-100 rounded-full border border-orange-500 text-sm"
             >
-              Hủy
+             {t('comment.t12')}
             </button>
             {loading ? (
               <button className="py-2 px-5 bg-green-300 cursor-not-allowed  text-white rounded-full text-sm">
-                Cập nhật
+                {t('comment.t13')}
               </button>
             ) : (
               <button
                 onClick={handleEdit}
                 className="py-2 px-5 bg-green-500 hover:bg-green-600 text-white rounded-full text-sm"
               >
-                Cập nhật
+               {t('comment.t13')}
               </button>
             )}
           </div>
@@ -185,7 +187,7 @@ function CommentItem({ comment, setTotalCmt, totalCmt }: props) {
         <div className="flex gap-5">
           <div className="text-primary-500 font-bold text-sm group cursor-pointer relative">
             {!hasReaction && (
-              <div onClick={() => handleLike("like")}> Thích</div>
+              <div onClick={() => handleLike("like")}> {t('comment.t4')}</div>
             )}
             {hasReaction && (
               <div
@@ -261,19 +263,19 @@ function CommentItem({ comment, setTotalCmt, totalCmt }: props) {
                     onClick={() => setIsEdit(true)}
                     className="flex items-center gap-4"
                   >
-                    Chỉnh sửa
+                   {t('comment.t6')}
                   </MenuItem>
                   <MenuItem
                     onClick={handleDelete}
                     className="flex items-center gap-4"
                   >
-                    Xóa bài viết
+                   {t('comment.t7')}
                   </MenuItem>
                 </>
               )}
 
               <MenuItem className="flex items-center gap-4">
-                Báo cáo vi phạm
+              {t('comment.t8')}
               </MenuItem>
             </MenuList>
           </Menu>

@@ -2,8 +2,10 @@ import { useState } from "react";
 import { ChangePasswordObj } from "../../types/formData";
 import { FaEyeSlash, FaRegEye } from "react-icons/fa";
 import { SChangePassword } from "../../services/CommonService";
+import { useTranslation } from "react-i18next";
 
 function ChangePassword() {
+  const {t} = useTranslation()
   const [data, setData] = useState<ChangePasswordObj>(new ChangePasswordObj());
   const [isShowPass, setIsShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,12 +45,12 @@ function ChangePassword() {
   };
   return (
     <div className="px-5 ">
-      <div className="font-bold text-xl">Đổi mật khẩu</div>
+      <div className="font-bold text-xl">{t('profile.s.t1')}</div>
 
       <div className="flex flex-col gap-3 py-3 ">
         <div className="flex flex-col md:flex-row md:items-center relative">
           <label htmlFor="" className="md:w-15 font-bold text-primary-800">
-            Mật khẩu cũ
+           {t('profile.s.t2')}
           </label>
           <input
             type={isShowPass ? "text" : "password"}
@@ -66,7 +68,7 @@ function ChangePassword() {
         </div>
         <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="md:w-15 font-bold text-primary-800">
-            Mật khẩu mới
+           {t('profile.s.t3')}
           </label>
           <input
             type="password"
@@ -78,7 +80,7 @@ function ChangePassword() {
         </div>
         <div className="flex flex-col md:flex-row md:items-center">
           <label htmlFor="" className="md:w-15 font-bold text-primary-800">
-            Xác nhận
+           {t('profile.s.t4')}
           </label>
           <input
             type="password"
@@ -111,14 +113,14 @@ function ChangePassword() {
         data.password_new == "" ||
         data.password_old == "" ||loading ? (
           <button className="py-2 px-8 bg-primary-300 cursor-not-allowed text-white rounded-lg ">
-            Cập nhật
+           {t('profile.s.t5')}
           </button>
         ) : (
           <button
             onClick={handleSubmit}
             className="py-2 px-8 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
           >
-            Cập nhật
+           {t('profile.s.t5')}
           </button>
         )}
       </div>

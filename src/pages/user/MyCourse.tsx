@@ -8,6 +8,7 @@ import { SGetCourseJoin } from "../../services/CommonService";
 import { MCourse } from "../../types/app";
 import CourseCollectionSke from "../../components/skeleton/CourseCollectionSke";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type LinkNav = {
   id: number;
@@ -15,13 +16,14 @@ type LinkNav = {
   link: string;
   type: string;
 };
-const linkNavs: LinkNav[] = [
-  { id: 1, title: "Tất cả", link: "", type: "all" },
-  { id: 2, title: "Đã hoàn thành", link: "?type=completed", type: "completed" },
-  { id: 3, title: "Chưa hoàn thành", link: "?type=studying", type: "studying" },
-  // { id: 4, title: "Chứng chỉ", link: "?type=certificate" },
-];
 function MyCourse() {
+  const {t} = useTranslation()
+  const linkNavs: LinkNav[] = [
+    { id: 1, title:  t('profile.c.t2'), link: "", type: "all" },
+    { id: 2, title: t('profile.c.t3'), link: "?type=completed", type: "completed" },
+    { id: 3, title: t('profile.c.t4'), link: "?type=studying", type: "studying" },
+    // { id: 4, title: "Chứng chỉ", link: "?type=certificate" },
+  ];
   const { currentUser } = useSelector((state: RootState) => state.appReducer);
   const [courses, setCourses] = useState<MCourse[]>([]);
   const [coursesTotal, setCoursesTotal] = useState<MCourse[]>([]);
@@ -79,7 +81,7 @@ function MyCourse() {
 
   return (
     <div className="">
-      <div className="font-bold text-xl">Khóa học của bạn</div>
+      <div className="font-bold text-xl"> {t('profile.c.t1')}</div>
 
       <div className="bg-gray-50 p-4 rounded-lg my-4 flex gap-4 items-center">
         <div className="flex gap-1 flex-1">
@@ -103,7 +105,7 @@ function MyCourse() {
         <div className=" relative hidden md:flex ">
           <input
             type="text"
-            placeholder="Tìm kiếm.."
+            placeholder={t('profile.c.t5')+".."}
             className="border bg-white px-2 py-1 rounded-lg focus:border-primary-500 shadow-sm"
           />
           <div className=" absolute top-[50%] right-2 translate-y-[-50%] text-xl text-gray-500">
@@ -132,7 +134,7 @@ function MyCourse() {
               })
             ) : (
               <div className="text-center text-primary-500 py-5">
-                Chưa tham gia khóa học nào!
+                {t('profile.c.t6')}
               </div>
             )}
           </div>

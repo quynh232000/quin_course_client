@@ -23,7 +23,9 @@ import { SGetUserInfo } from "../services/CommonService";
 import { setCurrentUser } from "../redux/reducers/appReducer";
 import ProfileSibarSke from "../components/skeleton/ProfileSibarSke";
 import DefaultSke from "../components/skeleton/DefaultSke";
+import { useTranslation } from "react-i18next";
 function ProfileLayout() {
+  const {t} = useTranslation()
   const { username } = useParams();
   const [userInfo, setUserInfo] = useState<MUser>();
 
@@ -99,7 +101,7 @@ function ProfileLayout() {
 
                   {userInfo?.id == user.id && (
                     <div className="flex justify-center items-center gap-2 text-primary-500 text-sm hover:cursor-pointer hover:text-primary-600">
-                      <FaRegEdit /> Chỉnh sửa
+                      <FaRegEdit /> {t('profile.edit')}
                     </div>
                   )}
                 </div>
@@ -114,7 +116,7 @@ function ProfileLayout() {
                         " text-primary-500 border-primary-500 bg-primary-50")
                     }
                   >
-                    <FaUser /><div className=" "> Hồ sơ</div>
+                    <FaUser /><div className=" "> {t('profile.profile')}</div>
                   </Link>
                   <Link
                   title="Khóa học"
@@ -126,7 +128,7 @@ function ProfileLayout() {
                         " text-primary-500 border-primary-500 bg-primary-50")
                     }
                   >
-                    <FaUserGraduate /> <div className=" ">Khóa học</div>
+                    <FaUserGraduate /> <div className=" ">{t('profile.course')}</div>
                   </Link>
                   {user && userInfo?.id == user.id && (
                     <>
@@ -139,7 +141,7 @@ function ProfileLayout() {
                             " text-primary-500 border-primary-500 bg-primary-50")
                         }
                       >
-                        <FaTruck /> <div className=" ">Lịch sử đặt hàng</div>
+                        <FaTruck /> <div className=" ">{t('profile.history')}</div>
                       </Link>
                       {/* <Link
                         to={"/account/voucher"}
@@ -160,7 +162,7 @@ function ProfileLayout() {
                             " text-primary-500 border-primary-500 bg-primary-50")
                         }
                       >
-                        <FaLock /> <div className=" ">Bảo mật</div>
+                        <FaLock /> <div className=" ">{t('profile.security')}</div>
                       </Link>
                     </>
                   )}

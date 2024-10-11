@@ -35,8 +35,10 @@ import { addToCart } from "../redux/reducers/appReducer";
 import { RootState } from "../redux/reducers";
 import ToastMessage from "../components/compoment/ToastMessage";
 import DefaultSke from "../components/skeleton/DefaultSke";
+import { useTranslation } from "react-i18next";
 
 function Detail() {
+  const {t} = useTranslation()
   const navigate = useNavigate();
   const [open, setOpen] = useState(1);
   const { slug } = useParams();
@@ -252,15 +254,15 @@ function Detail() {
               <p className="text-gray-100">{course?.sub_title}</p>
               <div className="flex items-center gap-4 mt-2">
                 <div className="border border-white bg-[#2e81e0] px-4 py-1 text-sm rounded-md">
-                  Cấp chứng chỉ
+                {t('detail.certificate')}
                 </div>
-                <div className="text-primary-300">(52 đánh giá)</div>
-                <div>{course?.enrollment_count} học viên</div>
+                <div className="text-primary-300">(52 {t('detail.review')})</div>
+                <div>{course?.enrollment_count} {t('detail.student')}</div>
               </div>
               <div className="flex items-center gap-2 py-3">
-                Giảng dạy bởi:
+              {t('detail.teach_by')}:
                 <span className="flex items-center gap-1 text-primary-300">
-                  Giảng viên:
+                {t('detail.teacher')}:
                   <Link to={"/teacher/@" + teacher?.username}>
                     <strong className=" uppercase underline">
                       {teacher?.first_name + " " + teacher?.last_name}
@@ -269,7 +271,7 @@ function Detail() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <MdOndemandVideo /> Thời lượng:{" "}
+                <MdOndemandVideo /> {t('detail.duration')}:
                 <span className="text-primary-300">
                   {formatDuration(course?.duration ? +course?.duration : 0)}{" "}
                 </span>
@@ -319,13 +321,13 @@ function Detail() {
                       onClick={() => handleCart("buynow")}
                       className="bg-primary-500 text-center flex-1 hover:bg-primary-600 text-white py-2 rounded-lg"
                     >
-                      Mua ngay
+                      {t('detail.buy_now')}
                     </button>
                     <button
                       onClick={() => handleCart("addcart")}
                       className="border-primary-500 border  flex-1 text-center text-primary-500 hover:bg-primary-50 py-2 rounded-lg"
                     >
-                      Thêm giỏ hàng
+                      {t('detail.add_cart')}
                     </button>
                   </div>
                 ) : course?.isEnrollment ? (
@@ -334,7 +336,7 @@ function Detail() {
                       to={"/learning/" + course?.slug}
                       className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
                     >
-                      <FaArrowRightLong /> Vào học
+                      <FaArrowRightLong /> {t('detail.join')}
                     </Link>
                   </div>
                 ) : enrollSuccess ? (
@@ -343,13 +345,13 @@ function Detail() {
                       to={"/learning/" + course?.slug}
                       className="border border-primary-500 text-primary-500 bg-primary-50 hover:bg-primary-100 w-full justify-center py-2 rounded-lg flex gap-2 items-center"
                     >
-                      <FaArrowRightLong /> Vào học
+                      <FaArrowRightLong /> {t('detail.join')}
                     </Link>
                   </div>
                 ) : (
                   <div className="flex gap-4" onClick={handleEnroll}>
                     <button className="bg-deep-orange-500 w-full rounded-lg text-white py-2 hover:bg-deep-orange-600 shadow-sm hover:shadow-none">
-                      Tham gia khóa học
+                    {t('detail.enrollment')}
                     </button>
                   </div>
                 )}
@@ -360,7 +362,7 @@ function Detail() {
       </div>
       {/* giang vien */}
       <div className="w-full px-5 xl:w-content m-auto">
-        <div className="font-bold text-3xl mb-4">Thông tin giảng viên</div>
+        <div className="font-bold text-3xl mb-4">{t('detail.teacher_infor')}</div>
         <div className="flex flex-col md:flex-row gap-8">
           <div className="md:w-fit w-full">
             <div className="md:w-[420px] w-full h-[274px] border rounded-xl">
@@ -398,13 +400,13 @@ function Detail() {
               <div>
                 <div className="flex items-center gap-2">
                   <FaPeopleGroup className="text-primary-500" />
-                  {teacherDashboard && teacherDashboard.count_students} học viên
+                  {teacherDashboard && teacherDashboard.count_students} {t('detail.student')}
                 </div>
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <FaCirclePlay className="text-primary-500" />{" "}
-                  {teacherDashboard && teacherDashboard.count_courses} khóa học
+                  {teacherDashboard && teacherDashboard.count_courses} {t('detail.course')}
                 </div>
               </div>
             </div>
@@ -424,11 +426,11 @@ function Detail() {
       {/* content */}
       <div className="bg-white">
         <div className="w-full px-5 xl:w-content m-auto">
-          <div className="font-bold text-3xl mb-4">Nội dung khóa học</div>
+          <div className="font-bold text-3xl mb-4">{t('detail.content')}</div>
           <div className="flex gap-2 items-center">
-            <span>{sections.length} phần</span>
+            <span>{sections.length} {t('detail.part')}</span>
             <span className="w-[10px] h-[10px] rounded-full bg-gray-500"></span>
-            <span>{course?.total_steps ?? 0} bài giảng</span>
+            <span>{course?.total_steps ?? 0} {t('detail.video')}</span>
             <span className="w-[10px] h-[10px] rounded-full bg-gray-500"></span>
             <span>
               {formatDuration(course?.duration ? +course?.duration : 0)}
@@ -461,7 +463,7 @@ function Detail() {
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 font-light">
-                                <div>{item.steps.length} bài giảng</div>
+                                <div>{item.steps.length} {t('detail.video')}</div>
                                 <div className="w-[8px] h-[8px] bg-gray-300 rounded-full"></div>
                               </div>
                             </div>
@@ -505,7 +507,7 @@ function Detail() {
                               })
                             ) : (
                               <div className="text-center text-primary-300 ">
-                                -- Đang cập nhật --
+                                -- {t('home.updating')} --
                               </div>
                             )}
                           </div>
@@ -516,7 +518,7 @@ function Detail() {
               </div>
             </div>
             <div className="flex-1 bg-gray-50 border rounded-lg p-5 shadow-sm h-fit">
-              <div className="font-bold text-xl">Bạn sẽ học được những gì?</div>
+              <div className="font-bold text-xl">{t('detail.what_learn')}</div>
               <div className="mt-5 flex flex-col gap-3">
                 {intends &&
                   intends
@@ -536,7 +538,7 @@ function Detail() {
       </div>
       {/* décription */}
       <div className="w-full px-5 xl:w-content m-auto">
-        <div className="font-bold text-3xl mb-4">Mô tả khóa học</div>
+        <div className="font-bold text-3xl mb-4">{t('detail.des')}</div>
 
         <div className="my-5 flex flex-col md:flex-row gap-4 ">
           <div
@@ -548,7 +550,7 @@ function Detail() {
             </div> */}
           </div>
           <div className="flex-1 border rounded-lg shadow-sm p-5 ">
-            <div className="font-bold text-xl">Yêu cầu khóa học</div>
+            <div className="font-bold text-xl">{t('detail.require')}</div>
             <div>
               <ul className=" py-4 flex flex-col gap-2 ">
                 {intends &&
@@ -560,7 +562,7 @@ function Detail() {
               </ul>
             </div>
 
-            <div className="font-bold text-xl">Đối tượng khóa khóa học</div>
+            <div className="font-bold text-xl">{t('detail.who')}</div>
             <div>
               <ul className=" py-4 flex flex-col gap-2 ">
                 {intends &&
@@ -577,7 +579,7 @@ function Detail() {
       {/* review */}
 
       <div className="w-full px-5 xl:w-content m-auto">
-        <div className="font-bold text-3xl mb-4">Xếp hạng khóa học</div>
+        <div className="font-bold text-3xl mb-4">{t('detail.rank')}</div>
         {myRview && (
           <div className="bg-gray-50 p-4 rounded-lg flex flex-col md:flex-row  gap-8">
             <div className="flex flex-col items-center   gap-5 text-center w-full md:w-fit py-2">
@@ -617,14 +619,14 @@ function Detail() {
                 myRview.can_review &&
                 (isLoadingReview ? (
                   <button className=" absolute top-[10px] right-[10px] bg-primary-300 cursor-not-allowed text-white rounded-lg px-4 py-1 ">
-                    Gửi đánh giá
+                    {t('detail.send')}
                   </button>
                 ) : (
                   <button
                     onClick={handleSubmitReview}
                     className=" absolute top-[10px] right-[10px] bg-primary-500 text-white rounded-lg px-4 py-1 hover:bg-primary-600"
                   >
-                    Gửi đánh giá
+                   {t('detail.send')}
                   </button>
                 ))}
             </div>
@@ -637,13 +639,13 @@ function Detail() {
                 return <ReviewItem key={item.id} review={item} />;
               })
             ) : (
-              <div> Chưa có đánh giá nào về khóa học này!</div>
+              <div> {t('detail.no_review')}</div>
             )}
           </div>
           {reviews && (+reviews.length  > 4) && (
             <div className="mt-5">
               <button className="border px-5 py-2 rounded-lg font-bold shadow-sm text-gray-700 hover:bg-gray-100">
-                Hiện tất cả ({reviews.length - 4}) đánh giá
+              {t('detail.see_all')} ({reviews.length - 4}) {t('detail.t')}
               </button>
             </div>
           )}
@@ -654,10 +656,10 @@ function Detail() {
       <section className="w-full px-5 xl:w-content m-auto mb-8">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="font-bold text-2xl md:text-3xl">Khóa học của Mr Quynh</div>
+            <div className="font-bold text-2xl md:text-3xl">{t('detail.my_course')} Mr Quynh</div>
           </div>
           <button className="flex items-center text-primary-500 gap-2">
-            Xem tất cả <FaChevronRight />
+          {t('home.see_all')} <FaChevronRight />
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-5">

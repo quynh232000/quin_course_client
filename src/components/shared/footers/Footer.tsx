@@ -2,7 +2,9 @@ import { FaLocationDot } from "react-icons/fa6";
 import logo from "../../../assets/logo/logo-new.png";
 import { FaFacebook, FaPhone, FaTiktok, FaYoutube } from "react-icons/fa";
 import { MdOutlineAttachEmail } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 function Footer() {
+  const {t} = useTranslation()
   return (
     <div className="w-full bg-gray-50">
       <div className="w-full px-5 xl:w-content m-auto">
@@ -12,8 +14,7 @@ function Footer() {
               <img src={logo} alt="" className="w-full h-full" />
             </div>
             <div className="mt-4 text-grey-900">
-              Niềm hạnh phúc của chúng tôi là được chia sẻ những kiến thức đến
-              mọi người.
+             {t('footer.col_1.t1')}
             </div>
             <div className="flex flex-col gap-3 mt-5">
               <div className="flex gap-2">
@@ -38,43 +39,43 @@ function Footer() {
           </div>
           <div>
             <div className="text-primary-500 uppercase text-lg font-bold pb-2">
-              Về chúng tôi
+              {t('footer.col_2.t1')}
             </div>
             <div className="mt-5 flex flex-col gap-3">
-              <div>Giới thiệu về Quin Course</div>
-              <div>Câu hỏi thường gặp</div>
-              <div>Hướng dẫn thanh toán</div>
-              <div>Blog mới nhất</div>
-              <div>Đơn vị liên kết phối hợp</div>
-              <div>Cơi hội có việc làm sau khi học</div>
+              <div>{t('footer.col_2.t1')}</div>
+              <div>{t('footer.col_2.t2')}</div>
+              <div>{t('footer.col_2.t3')}</div>
+              <div>{t('footer.col_2.t4')}</div>
+              <div>{t('footer.col_2.t5')}</div>
+              <div>{t('footer.col_2.t6')}</div>
+             
             </div>
           </div>
           <div>
-            <div className="text-primary-500 uppercase text-lg font-bold pb-2">Hợp tác</div>
+            <div className="text-primary-500 uppercase text-lg font-bold pb-2">{t('footer.col_3.t1')}</div>
             <div className="mt-5 flex flex-col gap-3">
-              <div>Đăng ký giản dạy</div>
-              <div>Đạo tạo doanh nghiệp</div>
-              <div>Chứng chỉ khóa học</div>
-              <div>Đào tạo trực tuyến</div>
-              <div>Đào tạo 1 kèm 1</div>
-              <div>Ưu đãi hợp tác với chúng tôi</div>
+              <div>{t('footer.col_3.t2')}</div>
+              <div>{t('footer.col_3.t3')}</div>
+              <div>{t('footer.col_3.t4')}</div>
+              <div>{t('footer.col_3.t5')}</div>
+              <div>{t('footer.col_3.t6')}</div>
+              <div>{t('footer.col_3.t7')}</div>
+             
             </div>
           </div>
           <div>
             <div className="text-primary-500 uppercase text-lg font-bold pb-2">
-              Công ty cổ phẩn đào tạo trực tuyến Quin Course
+            {t('footer.col_4.t1')}
             </div>
             <div className="mt-5 flex flex-col gap-3">
               <div>
-                Mã số thuế: <strong>345234332</strong>
+              {t('footer.col_4.t2')}: <strong>345234332</strong>
               </div>
               <div>
-                Ngày thành lập: <strong>02/09/2024</strong>
+              {t('footer.col_4.t3')}: <strong>02/09/2024</strong>
               </div>
               <div>
-                Lĩnh vực hoạt động: Giáo dục, giảng dạy nhiều chuyên ngành.
-                Chúng tôi tập chung xây dựng những sản phẩm giá trị cho cộng
-                đồng.
+              {t('footer.col_4.t4')}
               </div>
             </div>
           </div>

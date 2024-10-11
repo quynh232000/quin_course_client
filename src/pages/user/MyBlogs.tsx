@@ -6,8 +6,10 @@ import DefaultSke from "../../components/skeleton/DefaultSke";
 import BlogSavedItem from "../../components/items/BlogSavedItem";
 import { Link } from "react-router-dom";
 import BtnBack from "../../components/compoment/BtnBack";
+import { useTranslation } from "react-i18next";
 
 function MyBlogs() {
+  const {t} = useTranslation()
   const [blogs, setBlogs] = useState<MBlog[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -26,11 +28,11 @@ function MyBlogs() {
       <div className="flex-1">
         <div>
           <BtnBack/>
-          <div className="font-bold text-xl py-8">Bài viết của tôi</div>
+          <div className="font-bold text-xl py-8">{t('blog.t8')}</div>
         </div>
         <div className="border-b flex">
           <div className="border-b-2 w-fit font-bold cursor-pointer py-2 border-primary-500 text-primary-500 px-5">
-            Tất cả
+          {t('blog.t9')}
           </div>
           {/* <div className="border-b-2 w-fit font-bold cursor-pointer py-2 border-transparent text-gray-500 hover:text-gray-600 px-5">
             Bản nháp (2)
@@ -46,11 +48,11 @@ function MyBlogs() {
               })
             ) : (
               <div className=" flex flex-col gap-2">
-                <div>Bạn chưa có bài viết nào!</div>
+                <div>{t('blog.t14')}</div>
                 <div>
-                  Bấm vào đây để
+                {t('blog.t15')}
                   <Link to={"/blogs"} className="text-primary-500">
-                    Xem các bài viết nổi bật
+                  {t('blog.t16')}
                   </Link>
                 </div>
               </div>

@@ -36,6 +36,7 @@ import TimeModal from "../components/Modals/TimeModal";
 
 import { GrMenu } from "react-icons/gr";
 import { TbReportSearch } from "react-icons/tb";
+import { useTranslation } from "react-i18next";
 
 function Icon({ id = 1, open = 1 }) {
   return (
@@ -58,6 +59,7 @@ function Icon({ id = 1, open = 1 }) {
   );
 }
 function StudyLayout() {
+  const {t} = useTranslation()
   const dispatch = useDispatch();
   const { studyLog } = useSelector((state: RootState) => state.appReducer);
   const { user, isLogin } = useSelector(
@@ -129,7 +131,6 @@ function StudyLayout() {
       navigate("?id=" + step.uuid);
     }
   };
-console.log(learningLog);
 
   return (
     <div className="w-full flex flex-col">
@@ -157,7 +158,7 @@ console.log(learningLog);
               progress={Math.ceil(courseInfo?.percent_learning ?? 0)}
             />
             <span className="text-gray-700 hidden md:block">
-              {userProgress?.length ?? 0}/{courseInfo?.total_steps} bài học
+              {userProgress?.length ?? 0}/{courseInfo?.total_steps} {t('learning.t1')}
             </span>
           </div>
           {!studyLog.nextStep ||
@@ -166,7 +167,7 @@ console.log(learningLog);
                 to={"/certificate/" + courseInfo?.slug}
                 className="text-primary-500 font-bold text-sm hidden md:block"
               >
-                Xem chứng chỉ
+                {t('learning.t2')}
               </Link>
             ))}
           {isLogin && (
@@ -202,7 +203,7 @@ console.log(learningLog);
             }
           >
             <div className="font-bold text-primary-500 p-4 border-b shadow-sm">
-              Nội dung khóa học
+            {t('learning.t3')}
             </div>
             <div className="scrollbar_custom_hidden scrollbar_custom  overflow-y-scroll border-l">
               {/* item */}
@@ -328,14 +329,14 @@ console.log(learningLog);
               onClick={() => handleBtnStep("previous")}
               className="flex hover:bg-primary-600 hover:shadow-sm items-center gap-2 uppercase font-[600] text-sm border border-transparent bg-primary-500 text-white rounded-full px-6 py-[6px]"
             >
-              <FaChevronLeft /> Bài trước
+              <FaChevronLeft /> {t('learning.t5')}
             </button>
           ) : (
             <button
               disabled
               className="flex  items-center gap-2 uppercase font-[600] text-sm bg-blue-gray-50 text-primary-300 border border-primary-200 rounded-full px-6 py-[6px]"
             >
-              <FaChevronLeft /> Bài trước
+              <FaChevronLeft /> {t('learning.t6')}
             </button>
           )}
 
@@ -344,14 +345,14 @@ console.log(learningLog);
               onClick={() => handleBtnStep("next")}
               className="flex hover:bg-primary-600 hover:shadow-sm items-center gap-2 uppercase font-[600] text-sm border border-transparent bg-primary-500 text-white rounded-full px-6 py-[6px]"
             >
-              Bài sau <FaAngleRight />
+              {t('learning.t6')} <FaAngleRight />
             </button>
           ) : (
             <button
               disabled
               className="flex  items-center gap-2 uppercase font-[600] text-sm bg-blue-gray-50 text-primary-300 border border-primary-200 rounded-full px-6 py-[6px]"
             >
-              Bài sau <FaAngleRight />
+              {t('learning.t6')} <FaAngleRight />
             </button>
           )}
         </div>

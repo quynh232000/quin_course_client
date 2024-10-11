@@ -11,11 +11,13 @@ import { FormMartDateAgo } from "../functions/tool";
 import { SDeleteBlog, SSaveBlog } from "../../services/CommonService";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 type props = {
   blog: MBlog;
   type?: string;
 };
 function BlogSavedItem({ blog, type }: props) {
+  const {t} = useTranslation()
   const [isDelete, setIsDelete] = useState(false);
   const handleUnsave = () => {
     SSaveBlog(blog.id).then((res) => {
@@ -48,17 +50,17 @@ function BlogSavedItem({ blog, type }: props) {
           <div className="text-primary-500 flex items-center gap-2">
             {!type && (
               <div>
-                Đã lưu:
+               {t('blog.t17')}:
                 {FormMartDateAgo(blog.date_saved)}
               </div>
             )}
             {type && type == "edit" && (
-              <div>Chỉnh sửa :{FormMartDateAgo(blog.updated_at)}</div>
+              <div>{t('blog.t10')} :{FormMartDateAgo(blog.updated_at)}</div>
             )}
           </div>
           <div>·</div>
           <div className="flex gap-2 text-gray-500">
-            Tác giả
+          {t('blog.t11')}
             <div className="font-bold">
               {blog.user.first_name + " " + blog.user.last_name}
             </div>
@@ -74,12 +76,12 @@ function BlogSavedItem({ blog, type }: props) {
           </MenuHandler>
           <MenuList>
             {!type && (
-              <MenuItem onClick={handleUnsave}>Xóa khỏi mục đã lưu</MenuItem>
+              <MenuItem onClick={handleUnsave}>{t('blog.t18')}</MenuItem>
             )}
             {type && type == "edit" && (
               <div className="flex flex-col ">
-                <MenuItem onClick={handleEdit}>Chỉnh sửa</MenuItem>
-                <MenuItem onClick={handleDelete}>Xóa </MenuItem>
+                <MenuItem onClick={handleEdit}>{t('blog.t10')}</MenuItem>
+                <MenuItem onClick={handleDelete}>{t('blog.t12')} </MenuItem>
               </div>
             )}
           </MenuList>

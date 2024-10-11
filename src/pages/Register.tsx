@@ -14,6 +14,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/reducers";
 import { asyncCart } from "../redux/reducers/appReducer";
+import { useTranslation } from "react-i18next";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const level2Regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/; // Letters and numbers
@@ -30,6 +31,7 @@ const passColors = [
   "bg-success-500",
 ];
 function Register() {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const { cart } = useSelector((state: RootState) => state.appReducer);
@@ -65,7 +67,7 @@ function Register() {
     if (value == "") {
       setErrorInput({
         ...errorInput,
-        [name]: "Vui lòng nhập giá trị",
+        [name]: t("register.t1"),
       });
     } else {
       setErrorInput({
@@ -80,7 +82,7 @@ function Register() {
       if (!emailRegex.test(value)) {
         setErrorInput({
           ...errorInput,
-          email: "Email không đúng định dạng!",
+          email: t("register.t2"),
         });
         isValid = false;
       } else {
@@ -101,7 +103,7 @@ function Register() {
             isValid = false;
             setErrorInput({
               ...errorInput,
-              email: "Email đã tồn tại",
+              email: t("register.t3"),
             });
           }
         });
@@ -112,24 +114,24 @@ function Register() {
       if (level4Regex.test(value)) {
         setCheckPass({
           level: 4,
-          message: "Mật khẩu mạnh",
+          message: t("register.t4"),
         });
       } else if (level3Regex.test(value)) {
         setCheckPass({
           level: 3,
-          message: "Mật khẩu trung bình",
+          message: t("register.t5"),
         });
       } else if (level2Regex.test(value)) {
         isValid = false;
         setCheckPass({
           level: 2,
-          message: "Mật khẩu yếu",
+          message: t("register.t6"),
         });
       } else {
         isValid = false;
         setCheckPass({
           level: 1,
-          message: "Mật khẩu chưa đạt yêu cầu",
+          message: t("register.t7"),
         });
       }
     }
@@ -167,7 +169,6 @@ function Register() {
     setIsSubmit(false);
     SRegister(formData).then((res) => {
       if (res.status) {
-        
         localStorage.setItem("USER_TOKEN", res.meta.access_token);
         localStorage.setItem("IS_LOGIN", JSON.stringify(true));
         window.location.href = redirect ? redirect : "/";
@@ -179,8 +180,8 @@ function Register() {
             listIds.push(i.id);
           });
           SAsynCart(listIds, res.meta.access_token).then((res) => {
-            dispatch(asyncCart(res.data??[]));
-            setResultSuccess("Đăng ký thành công");
+            dispatch(asyncCart(res.data ?? []));
+            setResultSuccess(t("register.t8"));
             window.location.href = redirect ? redirect : "/";
           });
         } else {
@@ -201,15 +202,15 @@ function Register() {
         </div>
         <div className="lg:w-35 w-full p-3">
           <div>
-            <div className="font-bold text-3xl">Tạo tài khoản</div>
+            <div className="font-bold text-3xl">{t("register.t9")}</div>
             <div className="text-sm text-gray-500 mt-1">
-              Đăng ký 1 tài khoản mới trên Quin Course nhé!
+              {t("register.t10")}
             </div>
           </div>
           <div className="py-4 flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label htmlFor="" className="text-sm font-bold">
-                Họ đệm
+                {t("register.t11")}
               </label>
               <input
                 className={
@@ -220,13 +221,13 @@ function Register() {
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
-                placeholder="Nguyễn Văn"
+                placeholder="Nguyen Van"
               />
               <small className="text-red-500">{errorInput.first_name}</small>
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="" className="text-sm font-bold">
-                Tên
+                {t("register.t12")}
               </label>
               <input
                 className={
@@ -260,7 +261,7 @@ function Register() {
             </div>
             <div className="flex flex-col gap-1 ">
               <label htmlFor="" className="text-sm font-bold">
-                Mật khẩu
+                {t("register.t13")}
               </label>
               <div className="w-full relative">
                 <input
@@ -272,7 +273,7 @@ function Register() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Mật khẩu mới"
+                  placeholder="**********"
                 />
                 {showPass ? (
                   <span
@@ -340,14 +341,14 @@ function Register() {
                     onClick={handleSendCode}
                     className="text-sm px-2 py-1 rounded-lg bg-[#0E97E5] text-white w-fit absolute right-1 top-[50%] translate-y-[-50%]"
                   >
-                    Gửi mã
+                    {t("register.t14")}
                   </button>
                 ) : (
                   <button
                     disabled
                     className="text-sm px-2 py-1 rounded-lg bg-[#989797] text-gray-300 w-fit absolute right-1 top-[50%] translate-y-[-50%]"
                   >
-                    Gửi mã
+                    {t("register.t14")}
                   </button>
                 )}
               </div>
@@ -372,19 +373,19 @@ function Register() {
                 onClick={handleSubmit}
                 className="w-full bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600"
               >
-                Đăng Ký
+                {t("register.t15")}
               </button>
             ) : (
               <button className="w-full bg-primary-200 text-white py-2 rounded-lg cursor-not-allowed">
-                Đăng Ký
+                {t("register.t15")}
               </button>
             )}
 
             <div className="flex justify-center mt-5">
               <Link to={"/login" + (redirect ? "?redirect=" + redirect : "")}>
-                Bạn đã có tài khoản?
+                {t("register.t16")}
                 <span className="text-primary-500 underline ml-1 hover:text-primary-600">
-                  Đăng nhập
+                  {t("register.t17")}
                 </span>
                 .
               </Link>
@@ -392,13 +393,13 @@ function Register() {
           </div>
           <div className="border-b relative my-4">
             <div className=" absolute text-sm top-[-10px] bg-white px-3 right-[50%] translate-x-[50%] text-gray-500">
-              hoặc
+            {t('register.t18')}
             </div>
           </div>
           <div className="pt-4">
             <button className="border shadow-sm rounded-lg w-full py-2 flex items-center justify-center gap-3 hover:bg-primary-50">
               <img src={i_google} alt="" />
-              Đăng nhập với google
+              {t('register.t19')}
             </button>
           </div>
         </div>

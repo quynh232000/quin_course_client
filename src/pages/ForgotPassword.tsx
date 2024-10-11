@@ -3,7 +3,9 @@ import i_login from "../assets/images/login.png";
 import i_google from "../assets/icons/google.png";
 import { useState } from "react";
 import { SForgotPassword } from "../services/UserService";
+import { useTranslation } from "react-i18next";
 function ForgotPassword() {
+  const {t} = useTranslation()
   const [email, setEmail] = useState("");
   const [mess, setMess] = useState<{ status: boolean; message: string } | null>(
     null
@@ -24,9 +26,9 @@ function ForgotPassword() {
       <div className="border rounded-lg flex gap-5 shadow-sm px-5 py-12">
         <div className="w-35 p-3">
           <div>
-            <div className="font-bold text-3xl">Quên mật khẩu</div>
+            <div className="font-bold text-3xl">{t('forgot.t1')}</div>
             <div className="text-sm text-gray-500 mt-1">
-              Vui lòng nhập email để xác nhận đổi mật khẩu!
+              {t('forgot.t2')}
             </div>
           </div>
           {(!mess ||
@@ -59,19 +61,19 @@ function ForgotPassword() {
                       onClick={handleSubmit}
                       className="w-full bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600"
                     >
-                      Xác nhận
+                      {t('forgot.t3')}
                     </button>
                   ) : (
                     <button className="w-full bg-primary-300 cursor-not-allowed text-white py-2 rounded-lg ">
-                      Xác nhận
+                      {t('forgot.t3')}
                     </button>
                   )}
 
                   <div className="flex justify-center mt-5">
                     <Link to={"/login"}>
-                      Bạn đã có tài khoản?
+                     {t('forgot.t4')}
                       <span className="text-primary-500 underline ml-1 hover:text-primary-600">
-                        Đăng nhập
+                        {t('forgot.t5')}
                       </span>
                       .
                     </Link>
@@ -81,19 +83,18 @@ function ForgotPassword() {
             )}
           {mess && mess.status  && (
             <div className="text-success-500 text-center py-8 px-4 bg-green-50 my-5">
-              Chúng tôi đã gửi 1 mã xác nhận đến email của bạn! Vui lòng xác
-              nhận email để thay đổi mật khẩu.
+             {t('forgot.t6')}
             </div>
           )}
           <div className="border-b relative my-4">
             <div className=" absolute text-sm top-[-10px] bg-white px-3 right-[50%] translate-x-[50%] text-gray-500">
-              hoặc
+              {t('register.t18')}
             </div>
           </div>
           <div className="pt-4">
             <button className="border shadow-sm rounded-lg w-full py-2 flex items-center justify-center gap-3 hover:bg-primary-50">
               <img src={i_google} alt="" />
-              Đăng nhập với google
+             {t('register.t19')}
             </button>
           </div>
         </div>

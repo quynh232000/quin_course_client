@@ -18,10 +18,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../contants/Contant";
 import ToastMessage from "../compoment/ToastMessage";
+import { useTranslation } from "react-i18next";
 type props = {
   blog: MBlog;
 };
 function SaveShare({ blog }: props) {
+  const {t} = useTranslation()
   const { isLogin } = useSelector((state: RootState) => state.authReducer);
   const [isSaved, setIsSaved] = useState<boolean>(blog.is_saved);
   const [message, setMessage] = useState("");
@@ -84,18 +86,18 @@ function SaveShare({ blog }: props) {
               className="flex items-center gap-4"
             >
               <FaFacebook />
-              Chia sẻ lên Facebook
+              {t('share.s1')}
             </MenuItem>
             <MenuItem
               onClick={handleCopyLink}
               className="flex items-center gap-4"
             >
               <FaLink />
-              Sao chép liên kết
+              {t('share.s2')}
             </MenuItem>
             <MenuItem className="flex items-center gap-4">
               <FaFlag />
-              Báo cáo bài viết
+              {t('share.s3')}
             </MenuItem>
           </MenuList>
         </Menu>

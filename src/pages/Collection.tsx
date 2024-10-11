@@ -18,6 +18,7 @@ import TeacherSkeleton from "../components/skeleton/TeacherSkeleton";
 import CourseCollectionSke from "../components/skeleton/CourseCollectionSke";
 import { Option, Select } from "@material-tailwind/react";
 import { GrPowerReset } from "react-icons/gr";
+import { useTranslation } from "react-i18next";
 
 const data_duration = [
   { id: 1, name: "0-1 tiếng", value: "extraShort" },
@@ -33,6 +34,7 @@ const data_star = [
   { id: 4, value: 3.0, name: "3.0" },
 ];
 function Collection() {
+  const {t} = useTranslation()
   const [teachers, setTeachers] = useState<MTeacher[]>([]);
   const [courseFee, setCourseFee] = useState<MCourse[]>([]);
   const [courses, setCourses] = useState<MCourse[]>([]);
@@ -127,7 +129,7 @@ function Collection() {
         <section className="w-full">
           <div className="flex justify-between items-center">
             <div className="flex gap-4 items-center">
-              <div className="font-bold text-3xl">Khóa học miễn phí</div>
+              <div className="font-bold text-3xl">{t('collection.free')}</div>
             </div>
           </div>
           <div className="border-b flex">
@@ -140,7 +142,7 @@ function Collection() {
                 "py-2 px-8 hover:bg-primary-50  border-b-2  w-fit"
               }
             >
-              Phổ biến
+              {t('collection.popular')}
             </button>
             <button
               onClick={() => setFreeType("latest")}
@@ -151,7 +153,7 @@ function Collection() {
                 "py-2 px-8 hover:bg-primary-50  border-b-2  w-fit"
               }
             >
-              Mới nhất
+              {t('collection.newest')}
             </button>
           </div>
           {loadFree ? (
@@ -175,7 +177,7 @@ function Collection() {
         <section className="w-full">
           <div className="flex justify-between items-center">
             <div className="flex gap-4 items-center">
-              <div className="font-bold text-2xl md:text-3xl">Giảng viên tiêu biểu</div>
+              <div className="font-bold text-2xl md:text-3xl">{t('collection.teacher')}</div>
             </div>
             {/* <button className="flex items-center text-primary-500 gap-2">
               Xem tất cả <FaChevronRight />
@@ -204,34 +206,33 @@ function Collection() {
               <div className="font-bold lg:text-3xl text-2xl">
                 {" "}
                 {cateInfo
-                  ? `Tìm thấy (${countItems}) khóa học về` +
+                  ? `${t('collection.find')} (${countItems}) ${t('collection.about')}` +
                     ` '${cateInfo.name}'`
-                  :search?'Tìm kiếm "'+search+'"': "Tất cả khóa học"}
+                  :search?`${t('header.search')} "${search}"`: t('collection.all_course')}
               </div>
             </div>
             <div>
               <Select
                 color="blue"
-                label="Lọc theo"
+                label={t('collection.fillter')}
                 value={sortBy??''}
                 onChange={(val) => setSortBy(val ?? "latest")}
               >
-                <Option value="latest">Mới nhất</Option>
-                <Option value="popularity">Phổ biến nhất</Option>
-                <Option value="highest-rated">Xếp hạng cao nhất</Option>
+                <Option value="latest">{t('collection.newest')}</Option>
+                <Option value="popularity">{t('collection.popular')}</Option>
+                <Option value="highest-rated">{t('collection.rank')}</Option>
               </Select>
             </div>
           </div>
           <div className="md:flex hidden gap-2 items-center border py-2 px-2 rounded-lg my-3 font-bold ">
-            <IoMdInformationCircle /> Bạn không biết chắc? Tất cả khóa học đều
-            được đảm bảo hoàn tiền trong 7 ngày.
+            <IoMdInformationCircle />{t('collection.note')}
           </div>
           <div className="flex flex-col  lg:flex-row gap-4">
             <div className="  lg:w-30 w-full grid grid-cols-2 lg:grid-cols-1">
               <div>
                 <div className="font-bold border-t border-b bg-gray-50 p-2 px-3 flex items-center gap-2">
                   <FaAnglesRight />
-                  Xếp hạng
+                  {t('collection.level')}
                 </div>
                 <div className="flex flex-col  py-2 ">
                   {data_star.map((item) => {
@@ -252,11 +253,11 @@ function Collection() {
                           name="star"
                         />
                         <div>
-                          Từ{" "}
+                        {t('collection.from')} {'>= '}
                           <span className="text-orange-500">
-                            {item.name} sao
-                          </span>{" "}
-                          trở lên
+                            {item.name} {t('collection.star')}
+                          </span>
+                          
                         </div>
                       </label>
                     );
@@ -266,7 +267,7 @@ function Collection() {
               <div>
                 <div className="font-bold border-t border-b bg-gray-50 p-2 px-3 flex items-center gap-2">
                   <FaAnglesRight />
-                  Cấp độ
+                  {t('collection.capdo')}
                 </div>
                 <div className="flex flex-col  py-2 ">
                   {levels &&
@@ -313,7 +314,7 @@ function Collection() {
               <div>
                 <div className="font-bold border-t border-b bg-gray-50 p-2 px-3 flex items-center gap-2">
                   <FaAnglesRight />
-                  Thời lượng video
+                  {t('collection.duration')}
                 </div>
                 <div className="flex flex-col  py-2 ">
                   {data_duration.map((item) => {
@@ -344,7 +345,7 @@ function Collection() {
               <div>
                 <div className="font-bold border-t border-b bg-gray-50 p-2 px-3 flex items-center gap-2">
                   <FaAnglesRight />
-                  Giá
+                  {t('collection.price')}
                 </div>
                 <div className="flex flex-col  py-2 ">
                   <div className="flex items-center gap-2 text-sm py-2 px-3 ">
@@ -355,7 +356,7 @@ function Collection() {
                       type="radio"
                       onChange={() => setTypePrice("haspay")}
                     />
-                    <label htmlFor="pricetype1">Có trả phí</label>
+                    <label htmlFor="pricetype1">{t('collection.need')}</label>
                   </div>
                   <div className="flex items-center gap-2 text-sm py-2 px-3 ">
                     <input
@@ -366,7 +367,7 @@ function Collection() {
                       type="radio"
                       onChange={() => setTypePrice("free")}
                     />
-                    <label htmlFor="pricetype2">Miễn phí</label>
+                    <label htmlFor="pricetype2">{t('collection.price_free')}</label>
                   </div>
                 </div>
               </div>
@@ -374,7 +375,7 @@ function Collection() {
               <div className="border-t">
                 <button onClick={()=>resetFilter()} className="font-bold w-full hover:bg-primary-100 border-t border-b bg-primary-50 mt-2 p-2 px-3 flex items-center justify-center gap-2">
                   <GrPowerReset />
-                  Đặt lại
+                  {t('collection.reset')}
                 </button>
               </div>
             </div>
@@ -393,7 +394,7 @@ function Collection() {
                   <div className="flex flex-col gap-5 items-center py-16">
                     <img className="w-[74px]" src={i_notfund} alt="" />
                     <div className="text-red-500 font-bold">
-                      Không tìm thấy khóa học nào!
+                    {t('collection.empty')}
                     </div>
                   </div>
                 )}

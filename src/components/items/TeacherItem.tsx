@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { MTeacher } from "../../types/app";
+import { useTranslation } from "react-i18next";
 
 type props= {
   teacher:MTeacher
 }
 function TeacherItem({teacher}:props) {
+  const {t} = useTranslation()
   return (
     <Link to={"/teacher/@"+teacher.username} className="border rounded-lg p-3 flex flex-col items-center ">
       <div className="flex justify-center">
@@ -18,7 +20,7 @@ function TeacherItem({teacher}:props) {
       </div>
       <div className="mt-1 font-bold hover:text-primary-700">{teacher.first_name+" "+teacher.last_name}</div>
       <div className="text-center text-gray-500 text-sm mt-3">{teacher.teacher_info.major ??'--'}</div>
-      <div className="text-center text-gray-500 text-sm mt-3">{teacher.teacher_info.position??'Đang cập nhật'}</div>
+      <div className="text-center text-gray-500 text-sm mt-3">{teacher.teacher_info.position??t('home.updating')}</div>
     </Link>
   );
 }

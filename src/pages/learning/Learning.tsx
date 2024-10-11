@@ -15,10 +15,12 @@ import DefaultSke from "../../components/skeleton/DefaultSke";
 import LearningNote from "./LearningNote";
 // import Q_A from "./Q_A";
 import ModalComment from "../../components/compoment/ModalComment";
+import { useTranslation } from "react-i18next";
 
 // import { FaPlay } from "react-icons/fa";
 
 function Learning() {
+  const {t} = useTranslation()
   const dispatch = useDispatch();
   const { currentCourse } = useSelector((state: RootState) => state.appReducer);
   const [step_info, setStepInfo] = useState<MStep>();
@@ -127,7 +129,7 @@ function Learning() {
                       {step_info?.title}
                     </h4>
                     <div className="flex mt-2 text-gray-600">
-                      Cập nhật:
+                    {t('learning.t7')}:
                       <span>
                         {step_info && FormatDate(step_info?.updated_at)}
                       </span>
@@ -150,7 +152,7 @@ function Learning() {
                     {step_info.title}
                   </div>
                   <div className="text-gray-600 text-sm">
-                    Cập nhật {FormatDate(step_info.updated_at)}
+                  {t('learning.t7')} {FormatDate(step_info.updated_at)}
                   </div>
                   <div>
                     <div>
@@ -166,7 +168,7 @@ function Learning() {
                           {/* Ý nghĩa của đoạn code trên là gì? */}
                         </div>
                         <div className="mb-5 mt-3 pb-3">
-                          Chọn câu trả lời đúng
+                        {t('learning.t8')}
                         </div>
 
                         <div className="flex flex-col gap-2 mt-3">
@@ -200,14 +202,14 @@ function Learning() {
                             onClick={handleAnswer}
                             className="bg-primary-500 px-12 hover:bg-primary-600 rounded-full py-2 text-white"
                           >
-                            Trả lời
+                           {t('learning.t9')}
                           </button>
                         ) : (
                           <button
                             disabled
                             className="bg-primary-200 px-12  rounded-full py-2 text-white"
                           >
-                            Trả lời
+                            {t('learning.t9')}
                           </button>
                         )}
                       </div>
@@ -216,7 +218,7 @@ function Learning() {
 
                   {answer && (
                     <div>
-                      <div className="font-bold mt-3">Giải thích</div>
+                      <div className="font-bold mt-3">{t('learning.t10')}</div>
                       <p className="mt-3  text-gray-700">{answer.explain}</p>
                     </div>
                   )}
@@ -248,7 +250,7 @@ function Learning() {
                     "text-primary-500 bg-primary-50 border-primary-500")
                 }
               >
-                Tổng quan
+                {t('learning.t14')}
               </div>
               <div
                 onClick={() => setNavbar("note")}
@@ -258,7 +260,7 @@ function Learning() {
                     "text-primary-500 bg-primary-50 border-primary-500")
                 }
               >
-                Ghi chú
+               {t('learning.t11')}
               </div>
               <div
                 onClick={handleOpenComment}
@@ -268,7 +270,7 @@ function Learning() {
                     "text-primary-500 bg-primary-50 border-primary-500")
                 }
               >
-                Hỏi đáp
+                {t('learning.t12')}
               </div>
             </div>
             <div className="py-5 pb-32">
@@ -277,7 +279,7 @@ function Learning() {
                 <div>
                   <div className="flex flex-col md:flex-row border-b py-4 gap-5">
                     <div className="w-full md:w-25 font-bold text-gray-500">
-                      Nội dung bài học
+                    {t('learning.t13')}
                     </div>
                     <div className="flex-1 border-l pl-5">
                       {step_info && step_info.type == "lecture" && (
@@ -297,7 +299,7 @@ function Learning() {
                   </div>
                   <div className="flex border-b py-4 flex-col md:flex-row gap-5">
                     <div className="w-full md:w-25 font-bold text-gray-500">
-                      Bạn sẽ học được gì sau khóa học này?
+                    {t('learning.t15')}
                     </div>
                     <div className="flex-1 border-l pl-5">
                       {currentCourse?.intends

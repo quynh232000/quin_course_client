@@ -14,6 +14,7 @@ import { FormatPrice, FormMartDateAgo } from "../../components/functions/tool";
 import { CiGift } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 type propsicon = {
   id: number;
   open: number;
@@ -43,13 +44,14 @@ type typeNav = {
   key: string;
   title: string;
 };
-const menuNavs: typeNav[] = [
-  { id: 1, key: "all", title: "Tất cả" },
-  { id: 2, key: "completed", title: "Đã hoàn thành" },
-  { id: 3, key: "penđing", title: "Đang xử lý" },
-  { id: 4, key: "cancel", title: "Bị từ chối" },
-];
 function OrderHistory() {
+  const {t} = useTranslation()
+  const menuNavs: typeNav[] = [
+    { id: 1, key: "all", title: t('profile.o.t2') },
+    { id: 2, key: "completed", title: t('profile.o.t3') },
+    { id: 3, key: "penđing", title: t('profile.o.t4') },
+    { id: 4, key: "cancel", title: t('profile.o.t5') },
+  ];
   const [open, setOpen] = React.useState(0);
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
   const [orders, setOrders] = useState<MOrder[]>([]);
@@ -86,13 +88,14 @@ function OrderHistory() {
   };
   return (
     <div className="">
-      <div className="font-bold text-xl">Lịch sử đơn hàng</div>
+      <div className="font-bold text-xl"> {t('profile.o.t1')}</div>
 
       <div className="bg-gray-50 p-4 rounded-lg my-4 flex gap-4 items-center">
         <div className="flex gap-1 flex-1">
           {menuNavs.map((item) => {
             return (
               <div
+              key={item.id}
                 onClick={() => handleActiveNav(item)}
                 className={
                   "   px-6 py-1  hover:bg-primary-50 cursor-pointer w-fit rounded-lg " +
@@ -145,29 +148,29 @@ function OrderHistory() {
                     <div className="flex flex-col gap-2 w-full">
                       <div className="flex gap-4 items-center">
                         <div className="text-primary-600 text-lg font-bold flex items-center gap-2">
-                          <CiGift /> Đơn hàng{" "}
+                          <CiGift />{t('profile.o.t14')}
                           <i className="text-lg">#{item.order_code}</i>
                         </div>
                         <div className="flex items-center text-sm text-gray-500 font-normal">
-                          Ngày tạo:{" "}
+                        {t('profile.o.t6')}:{" "}
                           <div>{FormMartDateAgo(item.created_at)}</div>
                         </div>
                       </div>
                       <div className=" grid grid-cols-4  text-sm">
                         <div className="flex items-center">
-                          Tổng tiền:{" "}
+                        {t('profile.o.t7')}:{" "}
                           <i className="text-lg ml-2 text-orange-500 font-bold">
                             {FormatPrice(item.total)}
                           </i>
                         </div>
                         <div className="flex items-center">
-                          Số lượng:{" "}
+                        {t('profile.o.t8')}:{" "}
                           <i className="text-lg ml-2 text-orange-500 font-bold">
                             {item.order_details.length}
                           </i>
                         </div>
                         <div className="flex items-center">
-                          Thanh toán:
+                        {t('profile.o.t9')}:
                           <div
                             className={
                               "text-sm ml-2 flex items-center gap-1  font-bold " +
@@ -179,11 +182,11 @@ function OrderHistory() {
                             {item.status == "new" ? (
                               <>
                                 <IoIosTimer />
-                                Đang xử lý
+                                {t('profile.o.t11')}
                               </>
                             ) : (
                               <>
-                                <IoCheckmark /> Đã thanh toán
+                                <IoCheckmark /> {t('profile.o.t12')}
                               </>
                             )}
                           </div>
@@ -201,11 +204,11 @@ function OrderHistory() {
                             {item.status == "new" ? (
                               <>
                                 <IoIosTimer />
-                                Đang xử lý
+                                {t('profile.o.t11')}
                               </>
                             ) : (
                               <>
-                                <IoCheckmark /> Hoàn thành
+                                <IoCheckmark /> {t('profile.o.t3')}
                               </>
                             )}
                           </div>
@@ -252,124 +255,12 @@ function OrderHistory() {
             })
           ) : (
             <div className="text-center mt-5 text-red-500">
-              Không có dữ liệu nào!
+             {t('profile.o.no_data')}
             </div>
           )}
-          {/* <Accordion open={open === 1} icon={<Icon id={1} open={open} />}>
-            <AccordionHeader onClick={() => handleOpen(1)}>
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex gap-4 items-center">
-                  <div className="text-gray-600 text-lg font-normal">
-                    Đơn hàng <strong>#01</strong>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500 font-normal">
-                    Ngày tạo: <div>26/12/2024</div>
-                  </div>
-                </div>
-                <div className=" grid grid-cols-3  text-sm">
-                  <div className="flex items-center">
-                    Tổng tiền: <div>245.000 vnd</div>
-                  </div>
-                  <div className="flex items-center">
-                    Thanh toán: <div>Đã thanh toán</div>
-                  </div>
-                  <div className="flex items-center">
-                    Trạng thái: <div>Hoàn thành</div>
-                  </div>
-                </div>
-              </div>
-            </AccordionHeader>
-            <AccordionBody>
-              <div className="flex flex-col gap-3 bg-gray-100 p-3 rounded-lg">
-                <div className="flex gap-4 border-b py-2">
-                  <div className="w-[120px] h-[86px]">
-                    <img
-                      className="w-full h-full rounded-lg"
-                      src="https://res.cloudinary.com/dkj9bf0d3/image/upload/v1719980643/ozu1ktcve7ox8aw3xqlx.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div>
-                    <div className="text-lg line-clamp-2 h-[46px] text-gray-700 font-bold">
-                      Lập Trình JavaScript Cơ Bản
-                    </div>
-                    <div>
-                      <div className=" font-bold text-primary-500">
-                        245.000 vnd
-                      </div>
-                      <div>X1</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-4 border-b py-2">
-                  <div className="w-[120px] h-[86px]">
-                    <img
-                      className="w-full h-full rounded-lg"
-                      src="https://res.cloudinary.com/dkj9bf0d3/image/upload/v1719980643/ozu1ktcve7ox8aw3xqlx.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div>
-                    <div className="text-lg line-clamp-2 h-[46px] text-gray-700 font-bold">
-                      Lập Trình JavaScript Cơ Bản
-                    </div>
-                    <div>
-                      <div className=" font-bold text-primary-500">
-                        245.000 vnd
-                      </div>
-                      <div>X1</div>
-                    </div>
-                  </div>
-                </div>
-
-                
-              </div>
-            </AccordionBody>
-          </Accordion>
-          <Accordion open={open === 2} icon={<Icon id={2} open={open} />}>
-            <AccordionHeader onClick={() => handleOpen(2)}>
-              How to use Material Tailwind?
-            </AccordionHeader>
-            <AccordionBody>
-              We&apos;re not always in the position that we want to be at.
-              We&apos;re constantly growing. We&apos;re constantly making
-              mistakes. We&apos;re constantly trying to express ourselves and
-              actualize our dreams.
-            </AccordionBody>
-          </Accordion>
-          <Accordion open={open === 3} icon={<Icon id={3} open={open} />}>
-            <AccordionHeader onClick={() => handleOpen(3)}>
-              What can I do with Material Tailwind?
-            </AccordionHeader>
-            <AccordionBody>
-              We&apos;re not always in the position that we want to be at.
-              We&apos;re constantly growing. We&apos;re constantly making
-              mistakes. We&apos;re constantly trying to express ourselves and
-              actualize our dreams.
-            </AccordionBody>
-          </Accordion> */}
+        
         </div>
-        {/* {orders.length > 0 && (
-          <div className="pb-5 pt-8 px-4">
-            <div className="flex gap-1 justify-end">
-              <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                <FaAnglesLeft />
-              </div>
-              <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-500 font-bold text-white">
-                1
-              </div>
-              <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                2
-              </div>
-              <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                3
-              </div>
-              <div className="w-[48px] h-[48px] rounded-full flex justify-center items-center bg-primary-50 font-bold cursor-pointer hover:bg-primary-500 hover:text-white text-primary-500">
-                <FaAnglesRight />
-              </div>
-            </div>
-          </div>
-        )} */}
+       
       </div>
     </div>
   );

@@ -39,3 +39,13 @@ export type UserRegister = {
     updated_at: string
   }
   export type uuid = string
+  export class UpdateSocial{
+    facebook:string;
+    youtube:string;
+    zalo:string;
+    constructor(){
+      this.facebook='';
+      this.youtube='';
+      this.zalo='';
+    }
+  }

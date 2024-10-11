@@ -16,12 +16,14 @@ import { BlogTag, Tag } from "../../types/app";
 import ToastMessage from "../../components/compoment/ToastMessage";
 import { useNavigate, useParams } from "react-router-dom";
 import TagItemEdit from "../../components/items/TagItemEdit";
+import { useTranslation } from "react-i18next";
 type TypeEditor = {
   html: string;
   text: string;
 };
 
 function NewPost() {
+  const {t} = useTranslation()
   const navigate = useNavigate();
   const { id } = useParams();
   const [contentMarkdown, setContentMarkdown] = useState("");
@@ -39,7 +41,7 @@ function NewPost() {
     setContentHTML(html);
   };
   useEffect(() => {
-    document.title = "Tạo bài viết mới";
+    document.title = t('blog.t1');
     SGetTags().then((res) => {
       if (res.status) {
         setTags(res.data);
@@ -228,7 +230,7 @@ function NewPost() {
               onClick={id ? handleUpdate : handleSubmit}
               className="bg-primary-500"
             >
-              {id ? "Cập nhật" : "Xuất bản"}
+              {id ? t('blog.t7') : t('blog.t6')}
             </Button>
           )}
         </div>
@@ -240,7 +242,7 @@ function NewPost() {
               type="text"
               value={title}
               onChange={handleChangeTitle}
-              placeholder="Tiêu đề.."
+              placeholder={t('blog.t3')}
               className="w-full text-2xl px-3"
             />
           </div>
@@ -250,7 +252,7 @@ function NewPost() {
               value={subtitle}
               onChange={(e) => setSubTittle(e.target.value)}
               className="w-full text-xl px-3"
-              placeholder="Tiêu đề phụ.."
+              placeholder={t('blog.t2=4')}
             ></textarea>
           </div>
           <div className="mt-3 border-t pt-3 px-3">
@@ -263,7 +265,7 @@ function NewPost() {
                 value={selectTag}
                 onChange={(e) => setSelectTag(e.target.value)}
               >
-                <option value="">--Chọn--</option>
+                <option value="">--{t('blog.t5')}--</option>
                 {tags.map((item) => {
                   return (
                     <option key={item.id} value={item.id}>
@@ -300,7 +302,7 @@ function NewPost() {
               htmlFor="image"
               className="flex hover:shadow-none hover:bg-gray-200 items-center justify-center py-2 px-5 rounded-lg shadow-lg cursor-pointer bg-gray-100 w-fit"
             >
-              <MdOutlineFileUpload /> Chọn ảnh
+              <MdOutlineFileUpload />{t('blog.t2')}
             </label>
           </div>
         </div>

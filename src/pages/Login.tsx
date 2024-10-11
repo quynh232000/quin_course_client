@@ -12,10 +12,12 @@ import { RootState } from "../redux/reducers";
 import { asyncCart } from "../redux/reducers/appReducer";
 import GoogleLoginButton from "../components/compoment/GoogleLoginButton";
 import { sLoginWithGoogle } from "../services/UserService";
+import { useTranslation } from "react-i18next";
 // import ToastMessage from "../components/compoment/ToastMessage";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 function Login() {
+  const {t} = useTranslation()
   const location = useLocation();
   const { cart } = useSelector((state: RootState) => state.appReducer);
   const dispatch = useDispatch();
@@ -38,7 +40,7 @@ function Login() {
     if (value == "") {
       setErrorInput({
         ...errorInput,
-        [name]: "Vui lòng nhập đầy đủ thông tin!",
+        [name]: t('login.t1'),
       });
       isValid = false;
     } else {
@@ -51,7 +53,7 @@ function Login() {
       if (!emailRegex.test(value)) {
         setErrorInput({
           ...errorInput,
-          email: "Email không hợp lệ!",
+          email: t('login.t2'),
         });
         isValid = false;
       }
@@ -93,7 +95,7 @@ function Login() {
         });
         SAsynCart(listIds, res.meta.access_token).then((res) => {
           dispatch(asyncCart(res.data ?? []));
-          setResultSuccess("Đăng nhập thành công!");
+          setResultSuccess(t('login.3'));
           window.location.href = redirect ? redirect : "/";
         });
       } else {
@@ -119,9 +121,9 @@ function Login() {
       <div className="border rounded-lg flex gap-5 shadow-sm px-5 py-12">
         <div className="w-full lg:w-35 p-3">
           <div>
-            <div className="font-bold text-3xl">Đăng nhập</div>
+            <div className="font-bold text-3xl">{t('login.t4')}</div>
             <div className="text-sm text-gray-500 mt-1">
-              Nhập email và mật khẩu để đăng nhập tài khoản của bạn.
+            {t('login.t5')}
             </div>
           </div>
           <div className="py-4 flex flex-col gap-3">
@@ -144,7 +146,7 @@ function Login() {
             </div>
             <div className="flex flex-col gap-1 ">
               <label htmlFor="" className="text-sm font-bold">
-                Mật khẩu
+              {t('login.t6')}
               </label>
               <div className="w-full relative">
                 <input
@@ -156,7 +158,7 @@ function Login() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Mật khẩu mới"
+                  placeholder="*********"
                 />
                 {showPass ? (
                   <span
@@ -177,7 +179,7 @@ function Login() {
               <small className={"text-red-500"}>{errorInput.password}</small>
             </div>
             <div className="flex text-sm hover:text-primary-500">
-              <Link to={"/forgot-password"}>Quên mật khẩu!</Link>
+              <Link to={"/forgot-password"}>{t('login.t7')}</Link>
             </div>
             <div>
               {resultSuccess && (
@@ -198,11 +200,11 @@ function Login() {
                 onClick={handleSubmit}
                 className="w-full bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600"
               >
-                Đăng nhập
+                {t('login.t4')}
               </button>
             ) : (
               <button className="w-full bg-primary-200 text-white py-2 rounded-lg cursor-not-allowed">
-                Đăng nhập
+                {t('login.t4')}
               </button>
             )}
 
@@ -210,9 +212,9 @@ function Login() {
               <Link
                 to={"/register" + (redirect ? "?redirect=" + redirect : "")}
               >
-                Bạn chưa có tài khoản?{" "}
+                {t('login.t8')}?{" "}
                 <span className="text-primary-500 underline ml-1 hover:text-primary-600">
-                  Đăng ký ngay
+                {t('login.t9')}
                 </span>
                 .
               </Link>
@@ -221,7 +223,7 @@ function Login() {
 
           <div className="border-b relative my-4">
             <div className=" absolute text-sm top-[-10px] bg-white px-3 right-[50%] translate-x-[50%] text-gray-500">
-              hoặc
+            {t('login.t10')}
             </div>
           </div>
           <div className="pt-4">
